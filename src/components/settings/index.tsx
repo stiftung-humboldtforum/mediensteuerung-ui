@@ -17,7 +17,6 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import update from 'immutability-helper'
 import Startup from '../../containers/startup'
 import { useStores } from '../../models'
 import { SettingsSnapshotOut } from '../../models/SettingsStore'
@@ -28,7 +27,6 @@ import useAxios from 'axios-hooks'
 import Config from '../../config'
 import { DialogBody } from '@blueprintjs/core'
 import { LoadingButton } from '@mui/lab'
-import DeviceOptions from './deviceOptions'
 
 const Settings = ({ me, open, onClose }) => {
   const [{ data: config = [], loading, error }, refetch] = useAxios(
@@ -160,19 +158,6 @@ const Settings = ({ me, open, onClose }) => {
                           ...state.backend,
                           device_map: config,
                         },
-                        isDirty: true,
-                      })
-                    }}
-                  />
-                  <DeviceOptions
-                    config={state.backend.device_options}
-                    onChange={config => {
-                      console.log(config)
-                      setState({
-                        ...state,
-                        backend: update(state.backend, {
-                          device_options: { value: { $set: config.value } },
-                        }),
                         isDirty: true,
                       })
                     }}
