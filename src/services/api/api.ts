@@ -52,9 +52,7 @@ export class Api {
     await this.apisauce.post(`/api/${type}/${action}`, data)
   }
 
-  async getEvents(): Promise<
-    IKeyValueMap<EventSnapshotIn> | GeneralApiProblem
-  > {
+  async getEvents(): Promise<IKeyValueMap<EventSnapshotIn>> {
     const response = await this.apisauce.get('/api/calendar/get_events')
     const data = response.data as Array<any>
     return (data?.reduce(
