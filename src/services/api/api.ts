@@ -101,7 +101,7 @@ export class Api {
     return {
       devices: data.devices
         .map(device => ({
-          id: device.id,
+          id: String(device.id),
           data: {
             ...device,
             primary_ip: device.primary_ip
