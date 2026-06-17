@@ -89,7 +89,7 @@ const Element = observer(({ element }: { element: Tag }) => {
       title={<Devices devices={element.data.devices} />}
       enterDelay={250}
       leaveDelay={250}
-      componentsProps={{
+      slotProps={{
         tooltip: {
           sx: {
             bgcolor: 'common.black',

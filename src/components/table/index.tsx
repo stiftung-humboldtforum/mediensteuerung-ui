@@ -13,6 +13,7 @@ import {
   GridRowModel,
   GridColDef,
   GridValidRowModel,
+  GridRowSelectionModel,
 } from '@mui/x-data-grid'
 
 import { load, save } from '../../utils/storage'
@@ -34,6 +35,14 @@ import { useThrottle } from '../../hooks/useThrottle'
 const MemoizedColumnHeaders = memo(GridColumnHeaders)
 
 type TableVariant = 'devices' | 'tags' | 'locations'
+
+// DraggableRow receives the table variant via slotProps.row; x-data-grid v8+
+// requires custom row props to be declared through RowPropsOverrides.
+declare module '@mui/x-data-grid' {
+  interface RowPropsOverrides {
+    type?: TableVariant
+  }
+}
 
 export interface TableProps {
   path: MosaicPath
@@ -66,9 +75,14 @@ const Table = ({
   const [filterModel, setFilterModel] = useState<GridFilterModel>(null)
 
   const onRowSelectionModelChange = useCallback(
-    (ids: Array<string>) => {
+    // x-data-grid v8+ delivers a { type: 'include' | 'exclude', ids: Set }
+    // model instead of a flat id array; 'exclude' is the "select all" case.
+    (model: GridRowSelectionModel) => {
+      const { type, ids } = model
       setSelectedRows(
-        rows.filter(({ id }) => !!ids.find(_id => Number(_id) === id)),
+        type === 'exclude'
+          ? rows.filter(({ id }) => !ids.has(id))
+          : rows.filter(({ id }) => ids.has(id)),
       )
     },
     [rows, setSelectedRows],

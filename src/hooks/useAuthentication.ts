@@ -96,7 +96,7 @@ const useAuthentication = (): [
     [postLogin, authenticationStore],
   )
 
-  const refreshInterval = useRef<string | number>()
+  const refreshInterval = useRef<string | number | undefined>(undefined)
 
   useEffect(() => {
     if (isAuthenticated) {

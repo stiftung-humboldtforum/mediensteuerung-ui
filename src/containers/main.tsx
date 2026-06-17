@@ -1,12 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react'
 
-import {
-  Mosaic,
-  MosaicNode,
-  MosaicBranch,
-  MosaicPath,
-} from 'react-mosaic-component'
-import { MosaicKey } from 'react-mosaic-component/src/types'
+import { Mosaic, MosaicNode, MosaicPath } from 'react-mosaic-component'
 
 import { useDragDropManager } from 'react-dnd'
 
@@ -28,7 +22,7 @@ import KNXEvents from '../components/knxEvents'
 import Errors from '../components/errors'
 import usePageVisibility from '../hooks/usePageVisibility'
 
-type MosaicElement = (path: MosaicBranch[]) => JSX.Element
+type MosaicElement = (path: MosaicPath) => React.JSX.Element
 
 const initialValue: MosaicNode<string> = null
 
@@ -49,7 +43,7 @@ const Main = () => {
     [rootStore],
   )
 
-  const element_map: { [viewId: MosaicKey]: MosaicElement } = useMemo(() => {
+  const element_map: Record<string, MosaicElement> = useMemo(() => {
     if (rootStore.dataStore.isLoading) {
       return null
     }
@@ -166,8 +160,8 @@ const Main = () => {
         initialValue={node}
         value={node}
         onRelease={node => setNode(node)}
-        blueprintNamespace="bp5"
-        className="mosaic-blueprint-theme bp5-dark bp4-dark"
+        blueprintNamespace="bp6"
+        className="mosaic-blueprint-theme bp6-dark"
         dragAndDropManager={dragDropManager}
       />
       <DragLayer />

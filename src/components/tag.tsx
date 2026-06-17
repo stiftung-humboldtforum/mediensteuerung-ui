@@ -71,7 +71,10 @@ export const Tag = memo<TagProps>(({ name, color, id }) => {
 })
 
 const TagsContent = forwardRef(
-  (props: any, ref: MutableRefObject<HTMLDivElement>) => {
+  (
+    { toolTip = false, ...props }: any,
+    ref: MutableRefObject<HTMLDivElement>,
+  ) => {
     return (
       <Box
         ref={ref}
@@ -80,7 +83,7 @@ const TagsContent = forwardRef(
           display: 'flex',
           justifyContent: 'start',
           gap: '5px',
-          flexWrap: props.toolTip ? 'wrap' : 'nowrap',
+          flexWrap: toolTip ? 'wrap' : 'nowrap',
         }}
         onBlur={props.onBlur}
         onFocus={props.onFocus}
@@ -105,14 +108,10 @@ const TagsContent = forwardRef(
   },
 )
 
-TagsContent.defaultProps = {
-  toolTip: false,
-}
-
 export const Tags = (props: { tags: Array<TagInstance> }) => {
   const { tags } = props
-  const parentRef = useRef<HTMLDivElement | null>()
-  const ref = useRef<HTMLDivElement | null>()
+  const parentRef = useRef<HTMLDivElement | null>(null)
+  const ref = useRef<HTMLDivElement | null>(null)
   const [shouldUpdate, setShouldUpdate] = useState(false)
   const [showTooltip, setShowTooltip] = useState(false)
   useEffect(() => {
@@ -132,15 +131,22 @@ export const Tags = (props: { tags: Array<TagInstance> }) => {
         <Tooltip
           arrow
           title={<TagsContent tags={tags} toolTip />}
-          PopperProps={{
-            anchorEl: parentRef.current,
-            sx: { justifyContent: 'center' },
+          slotProps={{
+            popper: {
+              anchorEl: parentRef.current,
+              sx: { justifyContent: 'center' },
+            },
           }}
         >
           <TagsContent ref={ref} tags={tags} />
         </Tooltip>
       ) : (
-        <TagsContent ref={el => (ref.current = el)} tags={tags} />
+        <TagsContent
+          ref={el => {
+            ref.current = el
+          }}
+          tags={tags}
+        />
       )}
     </div>
   )

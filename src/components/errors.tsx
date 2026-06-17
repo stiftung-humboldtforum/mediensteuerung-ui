@@ -12,7 +12,7 @@ import { toJS } from 'mobx'
 const Errors = ({ path }) => {
   const apiRef = useGridApiRef()
   const { errorStore } = useStores()
-  const ref = useRef<HTMLDivElement>()
+  const ref = useRef<HTMLDivElement>(null)
   const [errors, setErrors] = useState([])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -57,13 +57,13 @@ const Errors = ({ path }) => {
             {
               field: 'errors',
               headerName: '',
-              valueGetter: ({ row }) => row.errors.join(' '),
+              valueGetter: (_value, row) => row.errors.join(' '),
               flex: 1,
             },
             {
               field: 'time',
               headerName: '',
-              valueFormatter: ({ value }) => moment(value).toString(),
+              valueFormatter: value => moment(value).toString(),
               flex: 1,
             },
           ]}

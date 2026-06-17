@@ -8,7 +8,6 @@ import React, {
   forwardRef,
 } from 'react'
 import { MosaicContext, getLeaves, MosaicNode } from 'react-mosaic-component'
-import { MosaicKey } from 'react-mosaic-component/src/types'
 import {
   CircularProgress,
   Popover,
@@ -233,7 +232,7 @@ export const StatusCell = observer<{
 })
 
 interface RowActionsProps {
-  node: MosaicNode<MosaicKey>
+  node: MosaicNode<string>
   variant?: ItemType
   item: Device | Tag | Location
 }

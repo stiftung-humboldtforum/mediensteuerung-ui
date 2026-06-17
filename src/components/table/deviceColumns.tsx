@@ -1,9 +1,5 @@
 import React from 'react'
-import {
-  GridColDef,
-  GridValueGetterParams,
-  getGridNumericOperators,
-} from '@mui/x-data-grid'
+import { GridColDef, getGridNumericOperators } from '@mui/x-data-grid'
 import Ip from '../ip'
 import { grabHandle, rowStatus, rowTags, rowActions } from './commonColumns'
 import { ItemType } from '../../hooks/useActions'
@@ -18,15 +14,15 @@ export const deviceColumns = ({ node }): Array<GridColDef> => [
     sortable: true,
     flex: 0.5,
     minWidth: 100,
-    valueGetter: (params: GridValueGetterParams) =>
-      params.row.data.primary_ip?.dns_name || params.row.data.name,
+    valueGetter: (_value, row) =>
+      row.data.primary_ip?.dns_name || row.data.name,
   },
   {
     field: 'description',
     headerName: 'Description',
     sortable: true,
     flex: 0.5,
-    valueGetter: ({ row }) => row.data.primary_ip.description,
+    valueGetter: (_value, row) => row.data.primary_ip.description,
   },
   {
     // geändert DA: Update Netbox
@@ -34,10 +30,10 @@ export const deviceColumns = ({ node }): Array<GridColDef> => [
     field: 'role',
     headerName: 'Role',
     sortable: true,
-    valueGetter: (params: GridValueGetterParams) =>
+    valueGetter: (_value, row) =>
       // geändert DA: Update Netbox
-      // params.row.data.device_role?.name,
-      params.row.data.role?.name,
+      // row.data.device_role?.name,
+      row.data.role?.name,
     flex: 0.5,
     minWidth: 100,
   },
@@ -45,8 +41,8 @@ export const deviceColumns = ({ node }): Array<GridColDef> => [
     field: 'device_type',
     headerName: 'Type',
     sortable: true,
-    valueGetter: (params: GridValueGetterParams) =>
-      `${params.row.data.device_type?.manufacturer.name} ${params.row.data.device_type.model}`,
+    valueGetter: (_value, row) =>
+      `${row.data.device_type?.manufacturer.name} ${row.data.device_type.model}`,
     flex: 0.5,
     minWidth: 100,
   },
@@ -54,9 +50,9 @@ export const deviceColumns = ({ node }): Array<GridColDef> => [
     field: 'uptime',
     headerName: 'Uptime',
     sortable: true,
-    valueGetter: (params: GridValueGetterParams) =>
-      params.row.status.uptime ? params.row.status.uptime : null,
-    valueFormatter: ({ value }) => value && secondsToDhms(value),
+    valueGetter: (_value, row) =>
+      row.status.uptime ? row.status.uptime : null,
+    valueFormatter: value => value && secondsToDhms(value),
     filterOperators: getGridNumericOperators(),
     flex: 0.5,
     minWidth: 100,
@@ -66,8 +62,7 @@ export const deviceColumns = ({ node }): Array<GridColDef> => [
     headerName: 'Primary IP',
     sortable: true,
     flex: 0.5,
-    valueGetter: (params: GridValueGetterParams) =>
-      params.row.data.primary_ip?.address,
+    valueGetter: (_value, row) => row.data.primary_ip?.address,
     minWidth: 138,
     renderCell: ({ value }) => <Ip value={value} />,
   },
@@ -77,8 +72,8 @@ export const deviceColumns = ({ node }): Array<GridColDef> => [
     headerName: 'Location',
     sortable: true,
     flex: 0.5,
-    valueGetter: (params: GridValueGetterParams) =>
-      `${params.row.data.location?.name} (${params.row.data.location?.data.name})`,
+    valueGetter: (_value, row) =>
+      `${row.data.location?.name} (${row.data.location?.data.name})`,
   },
   rowActions({ node, variant: 'device' }),
 ]
