@@ -127,7 +127,7 @@ export class Api {
                 device =>
                   !!device.tags.find(deviceTag => deviceTag.id === tag.id),
               )
-              .map(({ id }) => id),
+              .map(({ id }) => String(id)),
           },
         }))
         .reduce((acc, val) => ({ ...acc, [val.id]: val }), {}),
@@ -150,7 +150,7 @@ export class Api {
               .map(tag => tag.id),
             devices: data.devices
               .filter(device => device.location?.id === location.id)
-              .map(({ id }) => id),
+              .map(({ id }) => String(id)),
           },
         }))
         .reduce((acc, val) => ({ ...acc, [val.id]: val }), {}),

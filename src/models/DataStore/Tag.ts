@@ -17,7 +17,7 @@ export const TagDataModel = types.model({
 
 export const TagModel = types
   .model({
-    id: types.identifierNumber,
+    id: types.identifier,
     data: TagDataModel,
     status: types.optional(types.model(genericStatus), {}),
   })

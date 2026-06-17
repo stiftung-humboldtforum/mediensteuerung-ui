@@ -29,11 +29,15 @@ export const deviceColumns = ({ node }): Array<GridColDef> => [
     valueGetter: ({ row }) => row.data.primary_ip.description,
   },
   {
-    field: 'device_role',
+    // geändert DA: Update Netbox
+    // field: 'device_role',
+    field: 'role',
     headerName: 'Role',
     sortable: true,
     valueGetter: (params: GridValueGetterParams) =>
-      params.row.data.device_role?.name,
+      // geändert DA: Update Netbox
+      // params.row.data.device_role?.name,
+      params.row.data.role?.name,
     flex: 0.5,
     minWidth: 100,
   },
