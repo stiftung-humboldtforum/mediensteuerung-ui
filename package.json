@@ -3,9 +3,10 @@
   "version": "0.9",
   "private": true,
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "eject": "react-scripts eject",
+    "start": "vite",
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
     "lint": "eslint ."
   },
   "dependencies": {
@@ -24,7 +25,7 @@
     "@mui/icons-material": "^5.11.16",
     "@mui/lab": "^5.0.0-alpha.129",
     "@mui/material": "^5.12.3",
-    "@mui/styled-engine": "npm:@mui/styled-engine-sc@latest",
+    "@mui/styled-engine": "npm:@mui/styled-engine-sc@^5.12.0",
     "@mui/styled-engine-sc": "^5.12.0",
     "@mui/x-data-grid": "^6.3.1",
     "@mui/x-date-pickers": "^6.12.1",
@@ -50,19 +51,18 @@
     "mobx-state-tree": "^5.1.8",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.43",
-    "mongoose": "^7.5.0",
+    "bson": "^7.3.0",
     "notistack": "^3.0.1",
     "react": "^18.2.0",
     "react-dnd": "^16.0.1",
     "react-dnd-touch-backend": "^16.0.1",
     "react-dom": "^18.2.0",
     "react-mosaic-component": "^6.0.0",
-    "react-scripts": "5.0.1",
     "react-use-websocket": "^4.3.1",
     "rrule": "^2.7.2",
-    "sass": "^1.69.5",
-    "styled-components": "^6.0.0-rc.1",
-    "typescript": "^4.4.2",
+    "sass": "^1.80.0",
+    "styled-components": "^6.4.2",
+    "typescript": "^5.7.3",
     "uuid": "^9.0.0",
     "web-vitals": "^2.1.0"
   },
@@ -83,12 +83,14 @@
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.2.1",
     "@types/i18n-js": "^3.8.4",
+    "@vitejs/plugin-react": "^6.0.2",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "prettier": "^2.8.8"
+    "prettier": "^2.8.8",
+    "vite": "^8.0.16"
   },
   "resolutions": {
-    "@mui/styled-engine": "npm:@mui/styled-engine-sc@latest"
+    "@mui/styled-engine": "npm:@mui/styled-engine-sc@^5.12.0"
   }
 }

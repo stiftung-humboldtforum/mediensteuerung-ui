@@ -17,7 +17,7 @@ import BaseConfig from "./config.base"
 import ProdConfig from "./config.prod"
 import DevConfig from "./config.dev"
 
-const __DEV__ = process.env.NODE_ENV !== 'production'
+const __DEV__ = import.meta.env.DEV
 
 let ExtraConfig = ProdConfig
 

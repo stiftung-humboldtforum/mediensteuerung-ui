@@ -10,7 +10,7 @@ import {
   ListItem,
 } from '@mui/material'
 import { RRule } from 'rrule'
-import { Types } from 'mongoose'
+import { ObjectId } from 'bson'
 import { Moment } from 'moment'
 import DateRange from './daterange'
 import Repeat from './repeat'
@@ -57,7 +57,7 @@ const EventDialog = ({
 
   const save = useCallback(() => {
     const event = {
-      id: id || new Types.ObjectId().toString(),
+      id: id || new ObjectId().toString(),
       allDay: _allDay,
       start: _start.toDate(),
       end: _end.toDate(),

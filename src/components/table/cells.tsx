@@ -36,7 +36,7 @@ import {
 } from '@mui/icons-material'
 import { observer } from 'mobx-react-lite'
 import { Device } from '../../models/DataStore/Device'
-import { Types } from 'mongoose'
+import { ObjectId } from 'bson'
 import { Tag } from '../../models/DataStore/Tag'
 import { Location } from '../../models/DataStore/Location'
 import { ThirdPartyDraggable } from '@fullcalendar/interaction'
@@ -83,7 +83,7 @@ export const GrabHandle = observer(
 
       const getEventData = useCallback(
         () => ({
-          id: new Types.ObjectId(),
+          id: new ObjectId(),
           title: itemInfo.label,
           extendedProps: itemInfo,
         }),
