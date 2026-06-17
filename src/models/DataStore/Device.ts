@@ -8,7 +8,7 @@ export type { DeviceStatus } from './DeviceStatus'
 
 export const DeviceModel = types
   .model({
-    id: types.identifierNumber,
+    id: types.identifier,
     data: DeviceDataModel,
     status: types.optional(DeviceStatusModel, {}),
   })

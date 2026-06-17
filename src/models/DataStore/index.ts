@@ -1,4 +1,4 @@
-import { Instance, SnapshotOut, SnapshotIn, types } from 'mobx-state-tree'
+import { Instance, SnapshotOut, SnapshotIn, types, applySnapshot } from 'mobx-state-tree'
 import { api } from '../../services/api/'
 import { withSetPropAction } from '../helpers/withSetPropAction'
 import { DeviceModel } from './Device'
@@ -9,6 +9,7 @@ import { KNXEventsModel } from './KNX'
 
 export type { Device, DeviceSnapshotIn } from './Device'
 
+// geändert DA: async fetchData()
 export const DataStoreModel = types
   .model('DataStore')
   .props({
@@ -31,15 +32,25 @@ export const DataStoreModel = types
   .actions(store => ({
     async fetchData() {
       store.setProp('isLoading', true)
-      const response = await api.getData()
-      const data = response as DataStoreSnapshotIn
-      store.setProp('locations', data.locations)
-      store.setProp('tags', data.tags)
-      store.setProp('devices', data.devices)
-      store.setProp('isLoading', false)
-      values(store.devices).map(({ fetch }: any) => fetch())
-      values(store.tags).map(({ fetch }: any) => fetch())
-      values(store.locations).map(({ fetch }: any) => fetch())
+      try {
+        const response = await api.getData()
+        const data = response as DataStoreSnapshotIn
+
+        // Setze Maps einzeln - sicherer bei Netzwerkproblemen
+        applySnapshot(store.devices, data.devices)
+        applySnapshot(store.tags, data.tags)
+        applySnapshot(store.locations, data.locations)
+
+        store.setProp('isLoading', false)
+
+        // Fetch device statuses
+        values(store.devices).map(({ fetch }: any) => fetch())
+        values(store.tags).map(({ fetch }: any) => fetch())
+        values(store.locations).map(({ fetch }: any) => fetch())
+      } catch (error) {
+        console.error('fetchData() failed:', error)
+        store.setProp('isLoading', false)
+      }
     },
     commitDeviceEvent(event) {
       const device = store.devices.get(event.target)
