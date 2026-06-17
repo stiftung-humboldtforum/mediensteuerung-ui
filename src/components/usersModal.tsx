@@ -217,7 +217,7 @@ const UserRow = memo<UserRowProps>(({ user, refetch }) => {
         </IconButton>
       </TableCell>
       <PasswordModal
-        user={user}
+        user={userState}
         open={pwModal}
         onClose={() => setPwModal(false)}
       />

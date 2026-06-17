@@ -74,9 +74,11 @@ const useAuthentication = (): [
   }, [authenticationStore, postLogout])
 
   useEffect(() => {
-    axiosIntercept({ token, logout })
+    const interceptorId = axiosIntercept({ token, logout })
     authenticationStore.setAuthToken(token)
     setIsAuthenticated(!!token)
+    // Eject the previous interceptor; otherwise they stack on every token change.
+    return () => axios.interceptors.request.eject(interceptorId)
   }, [authenticationStore, token, logout])
 
   const login = useCallback(
@@ -99,16 +101,23 @@ const useAuthentication = (): [
   useEffect(() => {
     if (isAuthenticated) {
       refreshInterval.current = window.setInterval(async () => {
-        const { data } = await axios.post(
-          `https://${Config.API_HOST}/auth/jwt/refresh`,
-        )
-        await save('auth', data)
-        authenticationStore.setAuthToken(data.access_token)
-        setToken(data.access_token)
+        try {
+          const { data } = await axios.post(
+            `https://${Config.API_HOST}/auth/jwt/refresh`,
+          )
+          await save('auth', data)
+          authenticationStore.setAuthToken(data.access_token)
+          setToken(data.access_token)
+        } catch (exception) {
+          // A failed refresh must not leave a stale token + unhandled rejection
+          // while the interval keeps firing — log out cleanly.
+          console.error(exception)
+          logout()
+        }
       }, 3600000)
     }
     return () => window.clearInterval(refreshInterval.current)
-  }, [authenticationStore, isAuthenticated])
+  }, [authenticationStore, isAuthenticated, logout])
 
   useEffect(() => {
     load('auth').then(auth => {

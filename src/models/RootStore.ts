@@ -35,12 +35,16 @@ export const RootStoreModel = types
   .actions(store => ({
     commitError(error) {
       error.id = uniqueId('errors')
+      // ErrorModel.time is required; backend auth-failure errors omit it.
+      if (error.time === undefined || error.time === null) {
+        error.time = Date.now()
+      }
       store.errorStore.unshift(error)
     },
     start() {
       store.isLoading = true
       if (ws) {
-        ws.close()
+        ws.disconnect()
       }
       ws = new APIWebSocket(`wss://${Config.API_HOST}/api/ws`)
       ws.onmessage = payload => {
@@ -56,7 +60,9 @@ export const RootStoreModel = types
               store.dataStore.commitLocationEvent(payload.data.event)
               break
             case 'knx':
-              store.dataStore.commitLocationEvent(payload.data.event)
+              // The knx envelope has no `value`; commitLocationEvent would
+              // clobber location.status.knx_state with undefined. The real
+              // per-location status already arrives via the 'location' target.
               store.dataStore.commitKNXEvent(payload.data.event)
               break
             case 'app':

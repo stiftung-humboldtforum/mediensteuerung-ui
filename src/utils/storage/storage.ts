@@ -64,7 +64,7 @@ export async function save(key: string, value: any): Promise<boolean> {
  * @param key The key to kill.
  */
 export async function remove(key: string): Promise<void> {
-  await AsyncStorage.setItem(key, undefined)
+  await AsyncStorage.removeItem(key)
 }
 
 /**
