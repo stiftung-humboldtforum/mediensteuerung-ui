@@ -229,13 +229,4 @@ const EventDialog = ({
   )
 }
 
-EventDialog.defaultProps = {
-  id: null,
-  extendedProps: null,
-  end: null,
-  rrule: null,
-  remove: null,
-  allDay: null,
-}
-
 export default EventDialog

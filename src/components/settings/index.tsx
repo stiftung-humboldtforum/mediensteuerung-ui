@@ -16,6 +16,7 @@ import {
   TextField,
   Tooltip,
   Typography,
+  Button,
 } from '@mui/material'
 import Startup from '../../containers/startup'
 import { useStores } from '../../models'
@@ -26,7 +27,6 @@ import DeviceOrder from './deviceOrder'
 import useAxios from 'axios-hooks'
 import Config from '../../config'
 import { DialogBody } from '@blueprintjs/core'
-import { LoadingButton } from '@mui/lab'
 
 const Settings = ({ me, open, onClose }) => {
   const [{ data: config = [], loading, error }, refetch] = useAxios(
@@ -170,17 +170,17 @@ const Settings = ({ me, open, onClose }) => {
         </List>
       </DialogBody>
       <DialogActions>
-        <LoadingButton
+        <Button
           color="success"
           disabled={!state.isDirty}
           onClick={() => console.log({ data: Object.values(state.backend) })}
           size="large"
         >
           Apply
-        </LoadingButton>
-        <LoadingButton size="large" onClick={onClose}>
+        </Button>
+        <Button size="large" onClick={onClose}>
           Cancel
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   )

@@ -117,7 +117,7 @@ export class Api {
         .reduce((acc, val) => ({ ...acc, [val.id]: val }), {}),
       tags: data.tags
         .map(tag => ({
-          id: tag.id,
+          id: String(tag.id),
           data: {
             ...tag,
             devices: data.devices
@@ -131,7 +131,7 @@ export class Api {
         .reduce((acc, val) => ({ ...acc, [val.id]: val }), {}),
       locations: data.locations
         .map(location => ({
-          id: location.id,
+          id: String(location.id),
           data: {
             ...location,
             parent: location.parent,

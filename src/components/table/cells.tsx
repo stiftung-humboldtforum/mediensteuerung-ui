@@ -14,8 +14,8 @@ import {
   ButtonGroup,
   Tooltip,
   Box,
+  Button,
 } from '@mui/material'
-import LoadingButton from '@mui/lab/LoadingButton'
 import { addToLargest } from '../../utils/mosaic'
 import { Status } from '../../models/DataStore/Common'
 import useActions, {
@@ -336,7 +336,7 @@ export const RowActions = observer<RowActionsProps>(
           <ButtonGroup orientation="vertical">
             {Object.entries(actions).map(
               ([key, { action, disabled, loading }]) => (
-                <LoadingButton
+                <Button
                   key={key}
                   loading={loading}
                   loadingPosition="end"
@@ -346,7 +346,7 @@ export const RowActions = observer<RowActionsProps>(
                   variant="outlined"
                 >
                   {actionLabel(key)}
-                </LoadingButton>
+                </Button>
               ),
             )}
           </ButtonGroup>

@@ -137,7 +137,7 @@ const Table = ({
         setColumnVisibilityModel(columnVisibility({ variant }))
       }
       if (_paginationModel) {
-        setColumnVisibilityModel(_paginationModel)
+        setPaginationModel(_paginationModel)
       }
       setIsLoading(false)
     }
@@ -206,8 +206,8 @@ const TableWindow = ({
   path,
   node,
   variant = 'devices',
-  filterVariant,
-  filter,
+  filterVariant = null,
+  filter = null,
   modelKey,
 }: TableProps) => {
   const { dataStore } = useStores()
@@ -335,12 +335,6 @@ const TableWindow = ({
       </Paper>
     </MosaicWindow>
   )
-}
-
-TableWindow.defaultProps = {
-  variant: 'devices',
-  filterVariant: null,
-  filter: null,
 }
 
 export default TableWindow

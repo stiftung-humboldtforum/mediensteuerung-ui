@@ -47,6 +47,16 @@
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.29.7.tgz#12022450c45a4da6d8d8287b18a4ff2ddb23f768"
   integrity sha512-Nq8OhGWiZIZGV6hLHoyAKLLcJihP/xFeBMGJoUrxTX2psI8dCifzLhZISFb+VWS3wFMRDmCGw5R+dOySCqPLhw==
 
+"@base-ui/utils@^0.2.9":
+  version "0.2.9"
+  resolved "https://registry.yarnpkg.com/@base-ui/utils/-/utils-0.2.9.tgz#f6fe1704722a072721704f487a48754dbfe8f96b"
+  integrity sha512-x/PDDCYzoqPpjrdyb3VcyylTI2IjUXEtYDGi5foh7KsnmNJIIaVwA2GLgDH1dps1GgXiJbA60hM+AyuTfQzIvw==
+  dependencies:
+    "@babel/runtime" "^7.29.2"
+    "@floating-ui/utils" "^0.2.11"
+    reselect "^5.1.1"
+    use-sync-external-store "^1.6.0"
+
 "@blueprintjs/colors@^5.1.16":
   version "5.1.16"
   resolved "https://registry.yarnpkg.com/@blueprintjs/colors/-/colors-5.1.16.tgz#910f605caf97327e61dad13a9ba9384b6ac5e61a"
@@ -272,18 +282,6 @@
   dependencies:
     "@babel/runtime" "^7.29.2"
 
-"@mui/lab@^9.0.0-beta.5":
-  version "9.0.0-beta.5"
-  resolved "https://registry.yarnpkg.com/@mui/lab/-/lab-9.0.0-beta.5.tgz#d53443fce0a83c6ba7caac8b06926c4fd4a23936"
-  integrity sha512-1R+XQWJ/yfh9XNWeOT5SzRcy1+myFy6m8ugONA7aPLccExYWVbOZ6mP6Pvib4G281090o/ai3R9H6azkE3REWw==
-  dependencies:
-    "@babel/runtime" "^7.29.2"
-    "@mui/system" "^9.1.1"
-    "@mui/types" "^9.1.1"
-    "@mui/utils" "^9.1.1"
-    clsx "^2.1.1"
-    prop-types "^15.8.1"
-
 "@mui/material@^9.1.1":
   version "9.1.1"
   resolved "https://registry.yarnpkg.com/@mui/material/-/material-9.1.1.tgz#c999d4499fc3d9700353e34aba010e2e52fa6a02"
@@ -425,6 +423,20 @@
     "@mui/utils" "9.0.0"
     reselect "^5.1.1"
     use-sync-external-store "^1.6.0"
+
+"@mui/x-tree-view@^9.4.0":
+  version "9.4.0"
+  resolved "https://registry.yarnpkg.com/@mui/x-tree-view/-/x-tree-view-9.4.0.tgz#5f1f3a3753d1e01bd51091763ee8e8a971b02a0f"
+  integrity sha512-tJ4txQCwadY7Yj1LDhgtV4gjc0KCHdTWTPh/ynUj7BJ7aKqOzblXZzur0GLjyLJUhauBvotaF4LpzRxrjsPu5g==
+  dependencies:
+    "@babel/runtime" "^7.29.7"
+    "@base-ui/utils" "^0.2.9"
+    "@mui/utils" "9.0.1"
+    "@mui/x-internals" "^9.1.0"
+    "@types/react-transition-group" "^4.4.12"
+    clsx "^2.1.1"
+    prop-types "^15.8.1"
+    react-transition-group "^4.4.5"
 
 "@mui/x-virtualizer@9.0.0-alpha.8":
   version "9.0.0-alpha.8"

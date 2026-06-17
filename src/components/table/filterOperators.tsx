@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react'
 import { createFilterOptions, Chip } from '@mui/material'
 import {
-  GridCellParams,
   GridFilterInputValueProps,
   GridFilterItem,
   GridFilterOperator,
@@ -60,11 +59,11 @@ export const tagFilterOperators: Array<GridFilterOperator> = [
       if (!filterItem.field || !filterItem.value || !filterItem.operator) {
         return null
       }
-      return (params: GridCellParams): boolean => {
+      return (_value: any, row: any): boolean => {
         if (filterItem.value.length === 0) {
           return true
         }
-        const tagIds = params.row.tags.map(({ id }) => id)
+        const tagIds = row.tags.map(({ id }) => id)
         const filterIds = filterItem.value.map(({ id }) => id)
         return !!tagIds.filter(
           filterId => !!filterIds.filter(id => filterId === id).length,
@@ -80,11 +79,11 @@ export const tagFilterOperators: Array<GridFilterOperator> = [
       if (!filterItem.field || !filterItem.value || !filterItem.operator) {
         return null
       }
-      return (params: GridCellParams): boolean => {
+      return (_value: any, row: any): boolean => {
         if (filterItem.value.length === 0) {
           return true
         }
-        const tagIds = params.row.tags.map(({ id }) => id)
+        const tagIds = row.tags.map(({ id }) => id)
         const filterIds = filterItem.value.map(({ id }) => id)
         return (
           tagIds.filter(
@@ -102,11 +101,11 @@ export const tagFilterOperators: Array<GridFilterOperator> = [
       if (!filterItem.field || !filterItem.value || !filterItem.operator) {
         return null
       }
-      return (params: GridCellParams): boolean => {
+      return (_value: any, row: any): boolean => {
         if (filterItem.value.length === 0) {
           return true
         }
-        return !!params.row.tags.filter(
+        return !!row.tags.filter(
           ({ id }) =>
             !filterItem.value.filter(({ id: filterId }) => filterId === id)
               .length,
