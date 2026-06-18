@@ -242,22 +242,22 @@ const TableWindow = ({
     if (filter) {
       if (filterVariant === 'tag') {
         rows = values(dataStore.devices).filter(({ data }: any) =>
-          data.tags.find(({ id }) => id === filter.id),
+          data.tags.find(({ id }) => String(id) === String(filter.id)),
         )
       } else if (filterVariant === 'location') {
         if (variant === 'devices') {
           rows = values(dataStore.devices).filter(
-            ({ data }: any) => data.location?.id === filter.id,
+            ({ data }: any) => String(data.location?.id) === String(filter.id),
           )
         } else if (variant === 'tags') {
           rows = values(dataStore.tags).filter(
             ({ data: tag }: any) =>
               !!values(dataStore.devices)
                 .filter(
-                  ({ data: device }: any) => device.location?.id === filter.id,
+                  ({ data: device }: any) => String(device.location?.id) === String(filter.id),
                 )
                 .find(({ data: device }: any) =>
-                  device.tags.find(deviceTag => deviceTag.id === tag.id),
+                  device.tags.find(deviceTag => String(deviceTag.id) === String(tag.id)),
                 ),
           )
         }

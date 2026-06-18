@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react'
 
-import { Mosaic, MosaicNode, MosaicPath } from 'react-mosaic-component'
+import { Mosaic, MosaicNode, MosaicPath, convertLegacyToNary } from 'react-mosaic-component'
 
 import { useDragDropManager } from 'react-dnd'
 
@@ -120,7 +120,10 @@ const Main = () => {
       load('mosaic')
         .then(storedNode => {
           if (storedNode) {
-            setNode(storedNode)
+            // Persisted layouts may be in the react-mosaic v6 binary-tree shape;
+            // v7 utilities expect the n-ary {type:'split',...} form. Normalize on
+            // load so addToLargest/getLeaves don't corrupt a legacy layout.
+            setNode(convertLegacyToNary(storedNode))
           }
           setLoading(false)
         })
