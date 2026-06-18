@@ -17,9 +17,10 @@ const axiosIntercept = ({
   axios.interceptors.request.use(
     async config => {
       if (token) {
-        config.headers = {
-          authorization: `Bearer ${token}`,
-        }
+        // Set on the existing AxiosHeaders (newer axios types config.headers as
+        // AxiosHeaders, not a plain object) — also preserves other headers
+        // instead of replacing the whole object.
+        config.headers.authorization = `Bearer ${token}`
       }
       return config
     },
