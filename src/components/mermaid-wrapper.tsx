@@ -22,7 +22,10 @@ export const Mermaid = ({ children, ...rest }) => {
   }, [children])
 
   return (
-    <div {...rest} className="mermaid">
+    // key bound to the diagram source: mermaid stamps data-processed on the node
+    // and skips re-rendering it, so React must remount a fresh node when the
+    // content changes (e.g. PDU topology after a data-refresh).
+    <div key={String(children)} {...rest} className="mermaid">
       {children}
     </div>
   )

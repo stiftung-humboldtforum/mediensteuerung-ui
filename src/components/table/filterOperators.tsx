@@ -42,9 +42,14 @@ const TagInputValue = observer<GridFilterInputValueProps>(props => {
       onChange={(_, value) => handleFilterChange(value)}
       value={item.value || []}
       renderTags={(tagValue, getTagProps) =>
-        tagValue.map((option, index) => (
-          <Chip label={option.label} {...getTagProps({ index })} size="small" />
-        ))
+        tagValue.map((option, index) => {
+          // getTagProps returns a `key`; React 19 warns if it is spread, so
+          // pull it out and pass it explicitly.
+          const { key, ...tagProps } = getTagProps({ index })
+          return (
+            <Chip key={key} label={option.label} {...tagProps} size="small" />
+          )
+        })
       }
       multiple
     />
