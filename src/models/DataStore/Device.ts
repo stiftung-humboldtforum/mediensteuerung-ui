@@ -44,8 +44,11 @@ export const DeviceModel = types
       if (!store.status.is_attached) {
         ws.send({
           target: 'device',
+          // Backend keys devices by the numeric NetBox id; the store holds id as
+          // a string (types.identifier), so coerce back or the manager reports
+          // "Device not subscribed" and the status never arrives (spinner).
           command: 'fetch',
-          data: { id: store.id },
+          data: { id: Number(store.id) },
         })
       }
     },

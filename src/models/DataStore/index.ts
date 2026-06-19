@@ -53,7 +53,9 @@ export const DataStoreModel = types
       }
     },
     commitDeviceEvent(event) {
-      const device = store.devices.get(event.target)
+      // Map keys are string ids (types.identifier); the backend event.target is
+      // the numeric id -> coerce so the status actually lands (else: spinner).
+      const device = store.devices.get(String(event.target))
       if (device) {
         if (event.type === 'capabilities') {
           device.status.is_attached = true
@@ -62,14 +64,14 @@ export const DataStoreModel = types
       }
     },
     commitTagEvent(event) {
-      const tag = store.tags.get(event.target)
+      const tag = store.tags.get(String(event.target))
       if (tag) {
         tag.status.is_attached = true
         tag.status[event.type] = event.value
       }
     },
     commitLocationEvent(event) {
-      const location = store.locations.get(event.target)
+      const location = store.locations.get(String(event.target))
       if (location) {
         location.status.is_attached = true
         location.status[event.type] = event.value

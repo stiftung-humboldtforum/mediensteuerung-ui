@@ -49,7 +49,15 @@ export class Api {
   }
 
   async action({ type, action, data }) {
-    await this.apisauce.post(`/api/${type}/${action}`, data)
+    // Store ids are strings (types.identifier); the manager keys devices/tags/
+    // locations by the numeric NetBox id -> coerce id back before sending, else
+    // the command targets a non-existent key ("not subscribed"). Copy (don't
+    // mutate the passed store node).
+    const payload =
+      data?.data?.id != null
+        ? { ...data, data: { ...data.data, id: Number(data.data.id) } }
+        : data
+    await this.apisauce.post(`/api/${type}/${action}`, payload)
   }
 
   async getEvents(): Promise<IKeyValueMap<EventSnapshotIn>> {

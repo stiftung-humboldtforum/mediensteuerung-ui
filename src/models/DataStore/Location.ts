@@ -45,7 +45,7 @@ export const LocationModel = types
         ws.send({
           target: 'location',
           command: 'fetch',
-          data: { id: store.id },
+          data: { id: Number(store.id) },
         })
       }
     },

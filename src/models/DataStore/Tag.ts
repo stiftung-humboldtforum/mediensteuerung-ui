@@ -58,7 +58,7 @@ export const TagModel = types
         ws.send({
           target: 'tag',
           command: 'fetch',
-          data: { id: store.id },
+          data: { id: Number(store.id) },
         })
       }
     },
