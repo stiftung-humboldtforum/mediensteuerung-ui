@@ -1,4 +1,10 @@
-import { AsyncStorage } from 'AsyncStorage'
+/**
+ * Thin async wrapper around the browser's localStorage.
+ *
+ * Previously backed by the abandoned `AsyncStorage` shim (last published 2016).
+ * The API is kept promise-based so existing `await load(...)` call sites are
+ * unchanged; localStorage itself is synchronous.
+ */
 
 /**
  * Loads a string from storage.
@@ -7,9 +13,8 @@ import { AsyncStorage } from 'AsyncStorage'
  */
 export async function loadString(key: string): Promise<string | null> {
   try {
-    return await AsyncStorage.getItem(key)
+    return localStorage.getItem(key)
   } catch {
-    // not sure why this would fail... even reading the RN docs I'm unclear
     return null
   }
 }
@@ -22,7 +27,7 @@ export async function loadString(key: string): Promise<string | null> {
  */
 export async function saveString(key: string, value: string): Promise<boolean> {
   try {
-    await AsyncStorage.setItem(key, value)
+    localStorage.setItem(key, value)
     return true
   } catch {
     return false
@@ -36,8 +41,8 @@ export async function saveString(key: string, value: string): Promise<boolean> {
  */
 export async function load(key: string): Promise<any | null> {
   try {
-    const almostThere = await AsyncStorage.getItem(key)
-    return JSON.parse(almostThere)
+    const almostThere = localStorage.getItem(key)
+    return almostThere != null ? JSON.parse(almostThere) : null
   } catch {
     return null
   }
@@ -51,7 +56,7 @@ export async function load(key: string): Promise<any | null> {
  */
 export async function save(key: string, value: any): Promise<boolean> {
   try {
-    await AsyncStorage.setItem(key, JSON.stringify(value))
+    localStorage.setItem(key, JSON.stringify(value))
     return true
   } catch {
     return false
@@ -64,12 +69,20 @@ export async function save(key: string, value: any): Promise<boolean> {
  * @param key The key to kill.
  */
 export async function remove(key: string): Promise<void> {
-  await AsyncStorage.removeItem(key)
+  try {
+    localStorage.removeItem(key)
+  } catch {
+    // ignore
+  }
 }
 
 /**
  * Burn it all to the ground.
  */
 export async function clear(): Promise<void> {
-  await AsyncStorage.clear()
+  try {
+    localStorage.clear()
+  } catch {
+    // ignore
+  }
 }

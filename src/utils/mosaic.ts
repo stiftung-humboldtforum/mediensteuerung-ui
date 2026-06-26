@@ -1,4 +1,3 @@
-import dropRight from 'lodash/dropRight'
 import {
   Corner,
   MosaicDirection,
@@ -54,7 +53,8 @@ const splitAtPath = (
 ): MosaicNode<string> => {
   const parent = getNodeAtPath(
     currentNode,
-    dropRight(path),
+    // drop the last branch to address the parent node (was lodash dropRight)
+    path.slice(0, -1),
   ) as MosaicNode<string> | null
   const destination = getNodeAtPath(currentNode, path) as MosaicNode<string>
   const direction: MosaicDirection =
