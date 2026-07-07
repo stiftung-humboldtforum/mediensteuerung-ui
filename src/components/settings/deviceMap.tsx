@@ -209,7 +209,7 @@ const DeviceMap = ({
         <AccordionDetails>
           <List>
             {availableClasses.map(className => (
-              <Tooltip title="Edit rules">
+              <Tooltip key={className} title="Edit rules">
                 <ListItemButton
                   onClick={() => setState({ ...state, className })}
                 >
