@@ -43,7 +43,14 @@ class TileErrorBoundary extends React.Component<
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
     // Keep the crash visible for debugging instead of swallowing it silently.
-    console.error(`Tile "${this.props.tileId}" crashed:`, error, info)
+    // Log the component stack explicitly (as a string) — in a minified prod
+    // build the error message is just a React error code, so the component
+    // stack is the only thing that names which component actually threw.
+    console.error(`Tile "${this.props.tileId}" crashed:`, error)
+    console.error(
+      `Tile "${this.props.tileId}" component stack:`,
+      info.componentStack,
+    )
   }
 
   private retry = () => this.setState({ error: null })
