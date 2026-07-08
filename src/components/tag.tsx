@@ -4,8 +4,6 @@ import React, {
   useContext,
   useCallback,
   useRef,
-  MutableRefObject,
-  forwardRef,
   useState,
   useEffect,
 } from 'react'
@@ -70,43 +68,48 @@ export const Tag = memo<TagProps>(({ name, color, id }) => {
   )
 })
 
-const TagsContent = forwardRef(
-  (
-    { toolTip = false, ...props }: any,
-    ref: MutableRefObject<HTMLDivElement>,
-  ) => {
-    return (
-      <Box
-        ref={ref}
-        sx={{
-          width: 'fit-content',
-          display: 'flex',
-          justifyContent: 'start',
-          gap: '5px',
-          flexWrap: toolTip ? 'wrap' : 'nowrap',
-        }}
-        onBlur={props.onBlur}
-        onFocus={props.onFocus}
-        onMouseLeave={props.onMouseLeave}
-        onMouseOver={props.onMouseOver}
-        onTouchEnd={props.onTouchEnd}
-        onTouchStart={props.onTouchStart}
-        data-mui-internal-clone-element
-      >
-        {props.tags
-          ?.filter(({ data }) => !data.name.startsWith('ctrl'))
-          .map(tag => (
-            <Tag
-              key={tag.data.id}
-              id={tag.id}
-              name={tag.data.name}
-              color={tag.data.color}
-            />
-          ))}
-      </Box>
-    )
-  },
-)
+// Plain component taking the container ref as a normal prop instead of via
+// forwardRef — forwardRef here crashed production (Rollup) builds with
+// React error #300 ("rendered fewer hooks than expected") while working
+// fine under the Vite dev server (esbuild); the ref never needs to cross a
+// real component boundary (Tags owns it end-to-end), so forwardRef was
+// unnecessary complexity, not a requirement.
+const TagsContent = ({
+  toolTip = false,
+  boxRef,
+  ...props
+}: any) => {
+  return (
+    <Box
+      ref={boxRef}
+      sx={{
+        width: 'fit-content',
+        display: 'flex',
+        justifyContent: 'start',
+        gap: '5px',
+        flexWrap: toolTip ? 'wrap' : 'nowrap',
+      }}
+      onBlur={props.onBlur}
+      onFocus={props.onFocus}
+      onMouseLeave={props.onMouseLeave}
+      onMouseOver={props.onMouseOver}
+      onTouchEnd={props.onTouchEnd}
+      onTouchStart={props.onTouchStart}
+      data-mui-internal-clone-element
+    >
+      {props.tags
+        ?.filter(({ data }) => !data.name.startsWith('ctrl'))
+        .map(tag => (
+          <Tag
+            key={tag.data.id}
+            id={tag.id}
+            name={tag.data.name}
+            color={tag.data.color}
+          />
+        ))}
+    </Box>
+  )
+}
 
 export const Tags = (props: { tags: Array<TagInstance> }) => {
   const { tags } = props
@@ -138,11 +141,11 @@ export const Tags = (props: { tags: Array<TagInstance> }) => {
             },
           }}
         >
-          <TagsContent ref={ref} tags={tags} />
+          <TagsContent boxRef={ref} tags={tags} />
         </Tooltip>
       ) : (
         <TagsContent
-          ref={el => {
+          boxRef={el => {
             ref.current = el
           }}
           tags={tags}

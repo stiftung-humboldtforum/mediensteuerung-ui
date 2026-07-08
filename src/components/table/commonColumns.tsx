@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React from 'react'
 import {
   GridColDef,
   GridRenderCellParams,
@@ -11,8 +11,7 @@ import { tagFilterOperators } from './filterOperators'
 import { Status } from '../../models/DataStore/Common'
 
 const RenderGrabHandle = (params: any) => {
-  const ref = useRef<HTMLButtonElement>(null)
-  return <GrabHandle ref={ref} item={params.row} type={params.variant} />
+  return <GrabHandle item={params.row} type={params.variant} />
 }
 
 export const grabHandle = ({ variant }): GridColDef => ({

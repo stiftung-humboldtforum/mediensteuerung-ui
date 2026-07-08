@@ -4,8 +4,7 @@ import React, {
   useMemo,
   useEffect,
   useCallback,
-  MutableRefObject,
-  forwardRef,
+  useRef,
 } from 'react'
 import { MosaicContext, getLeaves, MosaicNode } from 'react-mosaic-component'
 import {
@@ -42,100 +41,103 @@ import { ThirdPartyDraggable } from '@fullcalendar/interaction'
 import { useDrag } from 'react-dnd'
 
 export const GrabHandle = observer(
-  forwardRef(
-    (
-      {
-        item,
-        type,
-      }: {
-        item: Device | Tag | Location
-        type: ItemType
-      },
-      ref: MutableRefObject<HTMLButtonElement>,
-    ) => {
-      const itemInfo = useMemo(() => {
-        let description: string
-        switch (type) {
-          case ItemType.device:
-            description = item.data.primary_ip?.dns_name
-            break
-          case ItemType.tag:
-            description = item.data.description
-            break
-          case ItemType.location:
-            description = item.data.name
-        }
-        return {
-          type,
-          label: item.name,
-          description,
-          id: item.id,
-        }
-      }, [
-        type,
-        item.name,
-        item.data.description,
-        item.data.name,
-        item.data.primary_ip,
-        item.id,
-      ])
+  ({
+    item,
+    type,
+  }: {
+    item: Device | Tag | Location
+    type: ItemType
+  }) => {
+    // Local ref only — never exposed to a parent, so no forwardRef needed.
+    // GrabHandle previously used forwardRef(observer(...)) which crashed
+    // production (Rollup) builds with React error #300 ("rendered fewer
+    // hooks than expected") while working fine under the Vite dev server;
+    // dropping forwardRef sidesteps the mobx-react-lite/React 19 forwardRef
+    // interop entirely.
+    const ref = useRef<HTMLButtonElement>(null)
 
-      const getEventData = useCallback(
-        () => ({
-          id: new ObjectId(),
-          title: itemInfo.label,
-          extendedProps: itemInfo,
-        }),
-        [itemInfo],
-      )
-
-      const canDrag = !!item.capabilities.length
-
-      useEffect(() => {
-        let draggable: ThirdPartyDraggable
-
-        if (ref?.current && canDrag) {
-          draggable = new ThirdPartyDraggable(ref.current, {
-            eventData: getEventData,
-            itemSelector: '.dragHandle',
-          })
-        }
-        return () => {
-          if (draggable) {
-            draggable.destroy()
-          }
-        }
-      }, [ref, canDrag, type, getEventData])
-
-      const [, drag] = useDrag(
-        () => ({
-          type: type,
-          item: {
-            ...itemInfo,
-          },
-          canDrag: true,
-        }),
-        [type, itemInfo],
-      )
-
-      if (!canDrag) {
-        return null
+    const itemInfo = useMemo(() => {
+      let description: string
+      switch (type) {
+        case ItemType.device:
+          description = item.data.primary_ip?.dns_name
+          break
+        case ItemType.tag:
+          description = item.data.description
+          break
+        case ItemType.location:
+          description = item.data.name
       }
+      return {
+        type,
+        label: item.name,
+        description,
+        id: item.id,
+      }
+    }, [
+      type,
+      item.name,
+      item.data.description,
+      item.data.name,
+      item.data.primary_ip,
+      item.id,
+    ])
 
-      drag(ref)
+    const getEventData = useCallback(
+      () => ({
+        id: new ObjectId(),
+        title: itemInfo.label,
+        extendedProps: itemInfo,
+      }),
+      [itemInfo],
+    )
 
-      return (
-        <IconButton
-          ref={ref}
-          className="dragHandle"
-          style={{ position: 'absolute', left: 55, cursor: 'grab' }}
-          disableRipple
-        >
-          <DragIndicator />
-        </IconButton>
-      )
-    },
-  ),
+    const canDrag = !!item.capabilities.length
+
+    useEffect(() => {
+      let draggable: ThirdPartyDraggable
+
+      if (ref.current && canDrag) {
+        draggable = new ThirdPartyDraggable(ref.current, {
+          eventData: getEventData,
+          itemSelector: '.dragHandle',
+        })
+      }
+      return () => {
+        if (draggable) {
+          draggable.destroy()
+        }
+      }
+    }, [canDrag, type, getEventData])
+
+    const [, drag] = useDrag(
+      () => ({
+        type: type,
+        item: {
+          ...itemInfo,
+        },
+        canDrag: true,
+      }),
+      [type, itemInfo],
+    )
+
+    if (!canDrag) {
+      return null
+    }
+
+    drag(ref)
+
+    return (
+      <IconButton
+        ref={ref}
+        className="dragHandle"
+        style={{ position: 'absolute', left: 55, cursor: 'grab' }}
+        disableRipple
+      >
+        <DragIndicator />
+      </IconButton>
+    )
+  },
 )
 
 const StatusIcon = ({ isLoading, hasError, isOnline, size = 'regular' }) => {
