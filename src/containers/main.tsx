@@ -1,6 +1,13 @@
-import React, { useMemo, useState, useEffect } from 'react'
+import React, { useMemo, useState, useEffect, useCallback } from 'react'
 
-import { Mosaic, MosaicNode, MosaicPath, convertLegacyToNary } from 'react-mosaic-component'
+import {
+  Mosaic,
+  MosaicNode,
+  MosaicPath,
+  convertLegacyToNary,
+  updateTree,
+  createRemoveUpdate,
+} from 'react-mosaic-component'
 
 import { useDragDropManager } from 'react-dnd'
 
@@ -20,6 +27,7 @@ import { observer } from 'mobx-react-lite'
 import { values } from 'mobx'
 import KNXEvents from '../components/knxEvents'
 import Errors from '../components/errors'
+import TileErrorBoundary from '../components/TileErrorBoundary'
 import usePageVisibility from '../hooks/usePageVisibility'
 
 type MosaicElement = (path: MosaicPath) => React.JSX.Element
@@ -137,6 +145,22 @@ const Main = () => {
     }
   }, [loading, node])
 
+  // Remove a single tile from the layout — used by TileErrorBoundary so a
+  // crashing view can be closed instead of wedging every reload (the layout is
+  // persisted, see the save effect above). Empty path = the tile is the whole
+  // root, so clear the layout entirely.
+  const removeTile = useCallback((path: MosaicPath) => {
+    setNode(current => {
+      if (!current) return current
+      if (!path || path.length === 0) return null
+      try {
+        return updateTree(current, [createRemoveUpdate(current, path)])
+      } catch {
+        return null
+      }
+    })
+  }, [])
+
   const isLoading = useMemo(() => {
     return (
       !element_map ||
@@ -158,7 +182,15 @@ const Main = () => {
       <AppBar node={node} setNode={setNode} />
       <Mosaic<string>
         renderTile={(id, path) =>
-          element_map[id] ? element_map[id](path) : null
+          element_map[id] ? (
+            <TileErrorBoundary
+              key={id}
+              tileId={id}
+              onRemove={() => removeTile(path)}
+            >
+              {element_map[id](path)}
+            </TileErrorBoundary>
+          ) : null
         }
         initialValue={node}
         value={node}
