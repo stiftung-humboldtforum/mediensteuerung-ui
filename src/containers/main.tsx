@@ -18,6 +18,7 @@ import { useStores } from '../models'
 import DragLayer from '../components/dragLayer'
 import AppBar from '../components/appBar'
 import Rooms from '../components/rooms'
+import FloorPlan from '../components/floorplan'
 import Table from '../components/table'
 import Device from '../components/device'
 import Calendar from '../components/calendar'
@@ -57,6 +58,7 @@ const Main = () => {
     }
     return {
       rooms: path => <Rooms path={path} />,
+      floorplan: path => <FloorPlan path={path} />,
       devices: path => (
         <Table variant="devices" path={path} node={node} modelKey="devices" />
       ),
