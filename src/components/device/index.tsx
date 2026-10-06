@@ -1,11 +1,10 @@
 import React, { useMemo, useEffect } from 'react'
 import { MosaicWindow } from 'react-mosaic-component'
-import { Paper, ButtonGroup } from '@mui/material'
-import LoadingButton from '@mui/lab/LoadingButton'
-import TreeView from '@mui/lab/TreeView'
+import { Paper, ButtonGroup, Button } from '@mui/material'
+import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView'
+import { TreeItem } from '@mui/x-tree-view/TreeItem'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-import TreeItem from '@mui/lab/TreeItem'
 import useActions, {
   actionLabel,
   iconMap,
@@ -32,14 +31,14 @@ const ObjectTreeItem = observer<ObjectTreeItemProps>(({ item, nodeId }) => {
       {Object.entries(item).map(([key, value]) => (
         <TreeItem
           key={`${nodeId}.${key}`}
-          nodeId={`${nodeId}.${key}`}
+          itemId={`${nodeId}.${key}`}
           label={key}
         >
           {typeof value === 'object' ? (
             <ObjectTreeItem nodeId={`${nodeId}.${key}`} item={value} />
           ) : (
             <TreeItem
-              nodeId={`${nodeId}.${key}.${value}`}
+              itemId={`${nodeId}.${key}.${value}`}
               label={String(value)}
             />
           )}
@@ -87,7 +86,7 @@ const Actions = observer<{ id: number; status: DeviceStatus }>(
     return (
       <ButtonGroup sx={{ marginBottom: '1rem' }}>
         {Object.entries(actions).map(([key, { action, disabled, loading }]) => (
-          <LoadingButton
+          <Button
             key={key}
             loading={loading}
             loadingPosition="end"
@@ -97,7 +96,7 @@ const Actions = observer<{ id: number; status: DeviceStatus }>(
             variant="outlined"
           >
             {actionLabel(key)}
-          </LoadingButton>
+          </Button>
         ))}
       </ButtonGroup>
     )
@@ -121,18 +120,20 @@ const DeviceComponent = ({ path, target }) => {
         <Actions id={device.id} status={device.status} />
         <DeviceInfo id={device.id} />
         <div style={{ height: '1rem' }} />
-        <TreeView
-          defaultCollapseIcon={<ExpandMoreIcon />}
-          defaultExpandIcon={<ChevronRightIcon />}
+        <SimpleTreeView
+          slots={{
+            collapseIcon: ExpandMoreIcon,
+            expandIcon: ChevronRightIcon,
+          }}
         >
           <TreeItem
             key={`${device.id}.root`}
-            nodeId={`${device.id}.root`}
+            itemId={`${device.id}.root`}
             label="All Device Properties"
           >
             <ObjectTreeItem item={device} nodeId={`${device.id}.eventsRoot`} />
           </TreeItem>
-        </TreeView>
+        </SimpleTreeView>
       </Paper>
     </MosaicWindow>
   )

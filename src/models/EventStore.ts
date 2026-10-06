@@ -16,7 +16,7 @@ export const EventModel = types.model({
   extendedProps: types.model({
     type: types.enumeration([ItemType.device, ItemType.tag, ItemType.location]),
     label: types.string,
-    description: types.string,
+    description: types.maybeNull(types.string),
     id: types.number,
     actions: types.maybeNull(
       types.model({

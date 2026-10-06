@@ -27,7 +27,7 @@ const computeState = value =>
 
 const ByWeekday = ({
   value,
-  onChange,
+  onChange = () => null,
 }: {
   value: Array<ByWeekdayType>
   onChange?: (arg0?: Array<ByWeekdayType>) => void
@@ -76,10 +76,6 @@ const ByWeekday = ({
       </FormGroup>
     </FormGroup>
   )
-}
-
-ByWeekday.defaultProps = {
-  onChange: () => null,
 }
 
 export default ByWeekday

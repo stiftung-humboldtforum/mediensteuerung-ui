@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from 'react'
 
-import { Box, Card, Stack, FormGroup, TextField, ListItem } from '@mui/material'
+import {
+  Box,
+  Card,
+  Stack,
+  FormGroup,
+  TextField,
+  ListItem,
+  Button,
+} from '@mui/material'
 import { Login as LoginIcon } from '@mui/icons-material'
-import { LoadingButton } from '@mui/lab'
 import PasswordInput from '../components/passwordInput'
 
 const Login = ({ login, loading, error }) => {
@@ -58,14 +65,14 @@ const Login = ({ login, loading, error }) => {
                 error={error}
                 loading={loading}
               />
-              <LoadingButton
+              <Button
                 loading={loading}
                 size="large"
                 startIcon={<LoginIcon />}
                 onClick={() => login({ username, password })}
               >
                 Login
-              </LoadingButton>
+              </Button>
             </FormGroup>
           </Stack>
         </Card>

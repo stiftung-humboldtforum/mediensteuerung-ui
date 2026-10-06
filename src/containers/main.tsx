@@ -1,12 +1,13 @@
-import React, { useMemo, useState, useEffect } from 'react'
+import React, { useMemo, useState, useEffect, useCallback } from 'react'
 
 import {
   Mosaic,
   MosaicNode,
-  MosaicBranch,
   MosaicPath,
+  convertLegacyToNary,
+  updateTree,
+  createRemoveUpdate,
 } from 'react-mosaic-component'
-import { MosaicKey } from 'react-mosaic-component/src/types'
 
 import { useDragDropManager } from 'react-dnd'
 
@@ -17,6 +18,7 @@ import { useStores } from '../models'
 import DragLayer from '../components/dragLayer'
 import AppBar from '../components/appBar'
 import Rooms from '../components/rooms'
+import FloorPlan from '../components/floorplan'
 import Table from '../components/table'
 import Device from '../components/device'
 import Calendar from '../components/calendar'
@@ -26,9 +28,10 @@ import { observer } from 'mobx-react-lite'
 import { values } from 'mobx'
 import KNXEvents from '../components/knxEvents'
 import Errors from '../components/errors'
+import TileErrorBoundary from '../components/TileErrorBoundary'
 import usePageVisibility from '../hooks/usePageVisibility'
 
-type MosaicElement = (path: MosaicBranch[]) => JSX.Element
+type MosaicElement = (path: MosaicPath) => React.JSX.Element
 
 const initialValue: MosaicNode<string> = null
 
@@ -49,12 +52,13 @@ const Main = () => {
     [rootStore],
   )
 
-  const element_map: { [viewId: MosaicKey]: MosaicElement } = useMemo(() => {
+  const element_map: Record<string, MosaicElement> = useMemo(() => {
     if (rootStore.dataStore.isLoading) {
       return null
     }
     return {
       rooms: path => <Rooms path={path} />,
+      floorplan: path => <FloorPlan path={path} />,
       devices: path => (
         <Table variant="devices" path={path} node={node} modelKey="devices" />
       ),
@@ -126,7 +130,10 @@ const Main = () => {
       load('mosaic')
         .then(storedNode => {
           if (storedNode) {
-            setNode(storedNode)
+            // Persisted layouts may be in the react-mosaic v6 binary-tree shape;
+            // v7 utilities expect the n-ary {type:'split',...} form. Normalize on
+            // load so addToLargest/getLeaves don't corrupt a legacy layout.
+            setNode(convertLegacyToNary(storedNode))
           }
           setLoading(false)
         })
@@ -139,6 +146,22 @@ const Main = () => {
       save('mosaic', node)
     }
   }, [loading, node])
+
+  // Remove a single tile from the layout — used by TileErrorBoundary so a
+  // crashing view can be closed instead of wedging every reload (the layout is
+  // persisted, see the save effect above). Empty path = the tile is the whole
+  // root, so clear the layout entirely.
+  const removeTile = useCallback((path: MosaicPath) => {
+    setNode(current => {
+      if (!current) return current
+      if (!path || path.length === 0) return null
+      try {
+        return updateTree(current, [createRemoveUpdate(current, path)])
+      } catch {
+        return null
+      }
+    })
+  }, [])
 
   const isLoading = useMemo(() => {
     return (
@@ -161,13 +184,21 @@ const Main = () => {
       <AppBar node={node} setNode={setNode} />
       <Mosaic<string>
         renderTile={(id, path) =>
-          element_map[id] ? element_map[id](path) : null
+          element_map[id] ? (
+            <TileErrorBoundary
+              key={id}
+              tileId={id}
+              onRemove={() => removeTile(path)}
+            >
+              {element_map[id](path)}
+            </TileErrorBoundary>
+          ) : null
         }
         initialValue={node}
         value={node}
         onRelease={node => setNode(node)}
-        blueprintNamespace="bp5"
-        className="mosaic-blueprint-theme bp5-dark bp4-dark"
+        blueprintNamespace="bp6"
+        className="mosaic-blueprint-theme bp6-dark"
         dragAndDropManager={dragDropManager}
       />
       <DragLayer />

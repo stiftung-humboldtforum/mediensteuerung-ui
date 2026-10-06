@@ -55,8 +55,11 @@ export const useInitialRootStore = (callback?: () => void | Promise<void>) => {
   useEffect(() => {
     let _unsubscribe: CallableFunction
     ;(async () => {
-      // set up the RootStore (returns the state restored from AsyncStorage)
-      const { unsubscribe: _unsubscribe } = await setupRootStore(rootStore)
+      // set up the RootStore (returns the state restored from AsyncStorage).
+      // Assign to the OUTER _unsubscribe — a `const` here shadowed it, so the
+      // cleanup below never actually unsubscribed.
+      const { unsubscribe } = await setupRootStore(rootStore)
+      _unsubscribe = unsubscribe
 
       // let the app know we've finished rehydrating
       setRehydrated(true)

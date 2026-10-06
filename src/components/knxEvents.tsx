@@ -52,7 +52,7 @@ const KNXEvents = ({ path }) => {
         field: 'state',
         headerName: 'Value',
         sortable: true,
-        valueGetter: ({ value }) => {
+        valueGetter: value => {
           if (value) {
             return 'On'
           } else if (typeof value === 'boolean') {
@@ -67,7 +67,7 @@ const KNXEvents = ({ path }) => {
         headerName: 'Target',
         sortable: true,
         flex: 1,
-        valueGetter: ({ value }) =>
+        valueGetter: (value: any) =>
           `${value?.data.description} (${value?.data.name})`,
       },
       {
@@ -75,7 +75,7 @@ const KNXEvents = ({ path }) => {
         headerName: 'Group Address',
         sortable: true,
         flex: 0.5,
-        valueGetter: ({ value, row }) =>
+        valueGetter: (value, row) =>
           `${
             value || row.target?.data.custom_fields.knx_switch_group_addresses
           }`,
@@ -84,7 +84,7 @@ const KNXEvents = ({ path }) => {
         field: 'time',
         headerName: 'Time',
         flex: 1,
-        valueFormatter: ({ value }) => moment(value).toString(),
+        valueFormatter: value => moment(value).toString(),
       },
     ],
     [],

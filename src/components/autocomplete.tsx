@@ -43,7 +43,7 @@ const CustomAutocomplete = props => {
           <OptionDescription>{option.description}</OptionDescription>
         </Option>
       )}
-      PopperComponent={CustomPopper}
+      slots={{ popper: CustomPopper }}
       {...props}
     />
   )

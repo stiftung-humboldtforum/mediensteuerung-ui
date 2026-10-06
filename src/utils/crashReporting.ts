@@ -23,7 +23,7 @@
  *  This is where you put your crash reporting service initialization code to call in `./app/app.tsx`
  */
 
-const __DEV__ = process.env.NODE_ENV !== 'production'
+const __DEV__ = import.meta.env.DEV
 
 export const initCrashReporting = () => {
   // Sentry.init({

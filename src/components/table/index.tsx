@@ -13,6 +13,7 @@ import {
   GridRowModel,
   GridColDef,
   GridValidRowModel,
+  GridRowSelectionModel,
 } from '@mui/x-data-grid'
 
 import { load, save } from '../../utils/storage'
@@ -34,6 +35,14 @@ import { useThrottle } from '../../hooks/useThrottle'
 const MemoizedColumnHeaders = memo(GridColumnHeaders)
 
 type TableVariant = 'devices' | 'tags' | 'locations'
+
+// DraggableRow receives the table variant via slotProps.row; x-data-grid v8+
+// requires custom row props to be declared through RowPropsOverrides.
+declare module '@mui/x-data-grid' {
+  interface RowPropsOverrides {
+    type?: TableVariant
+  }
+}
 
 export interface TableProps {
   path: MosaicPath
@@ -66,9 +75,14 @@ const Table = ({
   const [filterModel, setFilterModel] = useState<GridFilterModel>(null)
 
   const onRowSelectionModelChange = useCallback(
-    (ids: Array<string>) => {
+    // x-data-grid v8+ delivers a { type: 'include' | 'exclude', ids: Set }
+    // model instead of a flat id array; 'exclude' is the "select all" case.
+    (model: GridRowSelectionModel) => {
+      const { type, ids } = model
       setSelectedRows(
-        rows.filter(({ id }) => !!ids.find(_id => Number(_id) === id)),
+        type === 'exclude'
+          ? rows.filter(({ id }) => !ids.has(id))
+          : rows.filter(({ id }) => ids.has(id)),
       )
     },
     [rows, setSelectedRows],
@@ -123,7 +137,7 @@ const Table = ({
         setColumnVisibilityModel(columnVisibility({ variant }))
       }
       if (_paginationModel) {
-        setColumnVisibilityModel(_paginationModel)
+        setPaginationModel(_paginationModel)
       }
       setIsLoading(false)
     }
@@ -192,8 +206,8 @@ const TableWindow = ({
   path,
   node,
   variant = 'devices',
-  filterVariant,
-  filter,
+  filterVariant = null,
+  filter = null,
   modelKey,
 }: TableProps) => {
   const { dataStore } = useStores()
@@ -228,22 +242,22 @@ const TableWindow = ({
     if (filter) {
       if (filterVariant === 'tag') {
         rows = values(dataStore.devices).filter(({ data }: any) =>
-          data.tags.find(({ id }) => id === filter.id),
+          data.tags.find(({ id }) => String(id) === String(filter.id)),
         )
       } else if (filterVariant === 'location') {
         if (variant === 'devices') {
           rows = values(dataStore.devices).filter(
-            ({ data }: any) => data.location?.id === filter.id,
+            ({ data }: any) => String(data.location?.id) === String(filter.id),
           )
         } else if (variant === 'tags') {
           rows = values(dataStore.tags).filter(
             ({ data: tag }: any) =>
               !!values(dataStore.devices)
                 .filter(
-                  ({ data: device }: any) => device.location?.id === filter.id,
+                  ({ data: device }: any) => String(device.location?.id) === String(filter.id),
                 )
                 .find(({ data: device }: any) =>
-                  device.tags.find(deviceTag => deviceTag.id === tag.id),
+                  device.tags.find(deviceTag => String(deviceTag.id) === String(tag.id)),
                 ),
           )
         }
@@ -321,12 +335,6 @@ const TableWindow = ({
       </Paper>
     </MosaicWindow>
   )
-}
-
-TableWindow.defaultProps = {
-  variant: 'devices',
-  filterVariant: null,
-  filter: null,
 }
 
 export default TableWindow

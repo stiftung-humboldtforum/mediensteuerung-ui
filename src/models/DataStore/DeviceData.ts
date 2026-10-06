@@ -41,7 +41,9 @@ export const DeviceDataModel = types.model({
   location: types.maybe(types.reference(LocationModel)),
   primary_ip: Ip,
   serial: types.frozen(types.string),
-  device_role: types.frozen(Role),
+  // geändert DA: Update Netbox
+  // device_role: types.frozen(Role),
+  role: types.frozen(Role),
   device_type: types.frozen(DeviceType),
   interfaces: types.optional(types.array(types.frozen(Interface)), []),
   power_ports: types.optional(

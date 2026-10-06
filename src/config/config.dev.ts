@@ -6,6 +6,8 @@
  * https://reactnative.dev/docs/security#storing-sensitive-info
  */
 export default {
-  API_HOST: '' // Enter the hostname of the API server here,
+  // Empty host produced malformed dev URLs (https:///api ...). Default to
+  // localhost for the dev server; override for a remote API as needed.
+  API_HOST: 'localhost',
 }
 

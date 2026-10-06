@@ -49,12 +49,18 @@ export class Api {
   }
 
   async action({ type, action, data }) {
-    await this.apisauce.post(`/api/${type}/${action}`, data)
+    // Store ids are strings (types.identifier); the manager keys devices/tags/
+    // locations by the numeric NetBox id -> coerce id back before sending, else
+    // the command targets a non-existent key ("not subscribed"). Copy (don't
+    // mutate the passed store node).
+    const payload =
+      data?.data?.id != null
+        ? { ...data, data: { ...data.data, id: Number(data.data.id) } }
+        : data
+    await this.apisauce.post(`/api/${type}/${action}`, payload)
   }
 
-  async getEvents(): Promise<
-    IKeyValueMap<EventSnapshotIn> | GeneralApiProblem
-  > {
+  async getEvents(): Promise<IKeyValueMap<EventSnapshotIn>> {
     const response = await this.apisauce.get('/api/calendar/get_events')
     const data = response.data as Array<any>
     return (data?.reduce(
@@ -101,7 +107,7 @@ export class Api {
     return {
       devices: data.devices
         .map(device => ({
-          id: device.id,
+          id: String(device.id),
           data: {
             ...device,
             primary_ip: device.primary_ip
@@ -119,7 +125,7 @@ export class Api {
         .reduce((acc, val) => ({ ...acc, [val.id]: val }), {}),
       tags: data.tags
         .map(tag => ({
-          id: tag.id,
+          id: String(tag.id),
           data: {
             ...tag,
             devices: data.devices
@@ -127,13 +133,13 @@ export class Api {
                 device =>
                   !!device.tags.find(deviceTag => deviceTag.id === tag.id),
               )
-              .map(({ id }) => id),
+              .map(({ id }) => String(id)),
           },
         }))
         .reduce((acc, val) => ({ ...acc, [val.id]: val }), {}),
       locations: data.locations
         .map(location => ({
-          id: location.id,
+          id: String(location.id),
           data: {
             ...location,
             parent: location.parent,
@@ -150,7 +156,7 @@ export class Api {
               .map(tag => tag.id),
             devices: data.devices
               .filter(device => device.location?.id === location.id)
-              .map(({ id }) => id),
+              .map(({ id }) => String(id)),
           },
         }))
         .reduce((acc, val) => ({ ...acc, [val.id]: val }), {}),

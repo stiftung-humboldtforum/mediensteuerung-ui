@@ -13,7 +13,7 @@ export const tagColumns = ({ node }): Array<GridColDef> => [
     sortable: true,
     flex: 1,
     minWidth: 100,
-    valueGetter: ({ row }) => row.data.name,
+    valueGetter: (_value, row) => row.data.name,
     renderCell: ({ row }) => (
       <Tag id={row.id} name={row.data.name} color={row.data.color} />
     ),
@@ -23,7 +23,7 @@ export const tagColumns = ({ node }): Array<GridColDef> => [
     headerName: 'Description',
     sortable: true,
     flex: 1,
-    valueGetter: ({ row }) => row.data.description,
+    valueGetter: (_value, row) => row.data.description,
   },
   {
     field: 'device_count',
@@ -31,7 +31,7 @@ export const tagColumns = ({ node }): Array<GridColDef> => [
     sortable: true,
     flex: 1,
     type: 'number',
-    valueGetter: ({ row }) => row.data.devices.length,
+    valueGetter: (_value, row) => row.data.devices.length,
   },
   rowActions({ node, variant: ItemType.tag }),
 ]

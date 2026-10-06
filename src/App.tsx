@@ -27,7 +27,7 @@ const App = () => {
   }
 
   return (
-    <div className="App bp5-dark">
+    <div className="App bp6-dark">
       <SnackbarProvider
         maxSnack={5}
         preventDuplicate={true}

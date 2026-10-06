@@ -159,13 +159,16 @@ const Items = ({
             {...params}
             label={getTextFieldLabel(value?.type)}
             variant="standard"
-            InputProps={{
-              ...params.InputProps,
-              startAdornment: (
-                <InputAdornment position="start">
-                  <OptionIcon type={value?.type} />
-                </InputAdornment>
-              ),
+            slotProps={{
+              ...params.slotProps,
+              input: {
+                ...params.slotProps.input,
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <OptionIcon type={value?.type} />
+                  </InputAdornment>
+                ),
+              },
             }}
           />
         </FormGroup>

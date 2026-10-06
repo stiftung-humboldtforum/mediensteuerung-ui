@@ -4,19 +4,17 @@ import React, {
   useMemo,
   useEffect,
   useCallback,
-  MutableRefObject,
-  forwardRef,
+  useRef,
 } from 'react'
 import { MosaicContext, getLeaves, MosaicNode } from 'react-mosaic-component'
-import { MosaicKey } from 'react-mosaic-component/src/types'
 import {
   CircularProgress,
   Popover,
   ButtonGroup,
   Tooltip,
   Box,
+  Button,
 } from '@mui/material'
-import LoadingButton from '@mui/lab/LoadingButton'
 import { addToLargest } from '../../utils/mosaic'
 import { Status } from '../../models/DataStore/Common'
 import useActions, {
@@ -36,107 +34,110 @@ import {
 } from '@mui/icons-material'
 import { observer } from 'mobx-react-lite'
 import { Device } from '../../models/DataStore/Device'
-import { Types } from 'mongoose'
+import { ObjectId } from 'bson'
 import { Tag } from '../../models/DataStore/Tag'
 import { Location } from '../../models/DataStore/Location'
 import { ThirdPartyDraggable } from '@fullcalendar/interaction'
 import { useDrag } from 'react-dnd'
 
 export const GrabHandle = observer(
-  forwardRef(
-    (
-      {
-        item,
-        type,
-      }: {
-        item: Device | Tag | Location
-        type: ItemType
-      },
-      ref: MutableRefObject<HTMLButtonElement>,
-    ) => {
-      const itemInfo = useMemo(() => {
-        let description: string
-        switch (type) {
-          case ItemType.device:
-            description = item.data.primary_ip?.dns_name
-            break
-          case ItemType.tag:
-            description = item.data.description
-            break
-          case ItemType.location:
-            description = item.data.name
-        }
-        return {
-          type,
-          label: item.name,
-          description,
-          id: item.id,
-        }
-      }, [
-        type,
-        item.name,
-        item.data.description,
-        item.data.name,
-        item.data.primary_ip,
-        item.id,
-      ])
+  ({
+    item,
+    type,
+  }: {
+    item: Device | Tag | Location
+    type: ItemType
+  }) => {
+    // Local ref only — never exposed to a parent, so no forwardRef needed.
+    // GrabHandle previously used forwardRef(observer(...)) which crashed
+    // production (Rollup) builds with React error #300 ("rendered fewer
+    // hooks than expected") while working fine under the Vite dev server;
+    // dropping forwardRef sidesteps the mobx-react-lite/React 19 forwardRef
+    // interop entirely.
+    const ref = useRef<HTMLButtonElement>(null)
 
-      const getEventData = useCallback(
-        () => ({
-          id: new Types.ObjectId(),
-          title: itemInfo.label,
-          extendedProps: itemInfo,
-        }),
-        [itemInfo],
-      )
-
-      const canDrag = !!item.capabilities.length
-
-      useEffect(() => {
-        let draggable: ThirdPartyDraggable
-
-        if (ref?.current && canDrag) {
-          draggable = new ThirdPartyDraggable(ref.current, {
-            eventData: getEventData,
-            itemSelector: '.dragHandle',
-          })
-        }
-        return () => {
-          if (draggable) {
-            draggable.destroy()
-          }
-        }
-      }, [ref, canDrag, type, getEventData])
-
-      const [, drag] = useDrag(
-        () => ({
-          type: type,
-          item: {
-            ...itemInfo,
-          },
-          canDrag: true,
-        }),
-        [type, itemInfo],
-      )
-
-      if (!canDrag) {
-        return null
+    const itemInfo = useMemo(() => {
+      let description: string
+      switch (type) {
+        case ItemType.device:
+          description = item.data.primary_ip?.dns_name
+          break
+        case ItemType.tag:
+          description = item.data.description
+          break
+        case ItemType.location:
+          description = item.data.name
       }
+      return {
+        type,
+        label: item.name,
+        description,
+        id: item.id,
+      }
+    }, [
+      type,
+      item.name,
+      item.data.description,
+      item.data.name,
+      item.data.primary_ip,
+      item.id,
+    ])
 
-      drag(ref)
+    const getEventData = useCallback(
+      () => ({
+        id: new ObjectId(),
+        title: itemInfo.label,
+        extendedProps: itemInfo,
+      }),
+      [itemInfo],
+    )
 
-      return (
-        <IconButton
-          ref={ref}
-          className="dragHandle"
-          style={{ position: 'absolute', left: 55, cursor: 'grab' }}
-          disableRipple
-        >
-          <DragIndicator />
-        </IconButton>
-      )
-    },
-  ),
+    const canDrag = !!item.capabilities.length
+
+    useEffect(() => {
+      let draggable: ThirdPartyDraggable
+
+      if (ref.current && canDrag) {
+        draggable = new ThirdPartyDraggable(ref.current, {
+          eventData: getEventData,
+          itemSelector: '.dragHandle',
+        })
+      }
+      return () => {
+        if (draggable) {
+          draggable.destroy()
+        }
+      }
+    }, [canDrag, type, getEventData])
+
+    const [, drag] = useDrag(
+      () => ({
+        type: type,
+        item: {
+          ...itemInfo,
+        },
+        canDrag: true,
+      }),
+      [type, itemInfo],
+    )
+
+    if (!canDrag) {
+      return null
+    }
+
+    drag(ref)
+
+    return (
+      <IconButton
+        ref={ref}
+        className="dragHandle"
+        style={{ position: 'absolute', left: 55, cursor: 'grab' }}
+        disableRipple
+      >
+        <DragIndicator />
+      </IconButton>
+    )
+  },
 )
 
 const StatusIcon = ({ isLoading, hasError, isOnline, size = 'regular' }) => {
@@ -233,7 +234,7 @@ export const StatusCell = observer<{
 })
 
 interface RowActionsProps {
-  node: MosaicNode<MosaicKey>
+  node: MosaicNode<string>
   variant?: ItemType
   item: Device | Tag | Location
 }
@@ -337,7 +338,7 @@ export const RowActions = observer<RowActionsProps>(
           <ButtonGroup orientation="vertical">
             {Object.entries(actions).map(
               ([key, { action, disabled, loading }]) => (
-                <LoadingButton
+                <Button
                   key={key}
                   loading={loading}
                   loadingPosition="end"
@@ -347,7 +348,7 @@ export const RowActions = observer<RowActionsProps>(
                   variant="outlined"
                 >
                   {actionLabel(key)}
-                </LoadingButton>
+                </Button>
               ),
             )}
           </ButtonGroup>

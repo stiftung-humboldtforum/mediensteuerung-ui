@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React from 'react'
 import {
   GridColDef,
   GridRenderCellParams,
@@ -11,8 +11,7 @@ import { tagFilterOperators } from './filterOperators'
 import { Status } from '../../models/DataStore/Common'
 
 const RenderGrabHandle = (params: any) => {
-  const ref = useRef()
-  return <GrabHandle ref={ref} item={params.row} type={params.variant} />
+  return <GrabHandle item={params.row} type={params.variant} />
 }
 
 export const grabHandle = ({ variant }): GridColDef => ({
@@ -43,7 +42,7 @@ export const rowStatus = (): GridSingleSelectColDef => ({
     { value: 1, label: Status[1] },
     { value: 2, label: Status[2] },
   ],
-  valueGetter: ({ row }) => row.status.is_online,
+  valueGetter: (_value, row) => row.status.is_online,
   renderCell: ({ row }) => <StatusCell item={row} />,
 })
 
@@ -53,7 +52,7 @@ export const rowTags = (): GridColDef => ({
   sortable: true,
   flex: 1,
   filterOperators: tagFilterOperators,
-  valueGetter: ({ row }) =>
+  valueGetter: (_value, row) =>
     row.tags
       .map(({ name }) => name)
       .sort((a: string, b: string) => a.localeCompare(b))

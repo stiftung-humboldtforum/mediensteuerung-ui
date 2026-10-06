@@ -26,6 +26,11 @@ export class APIWebSocket implements APIWebSocket {
   }
 
   connect() {
+    this._shouldConnect = true
+    if (this._reconnectInterval) {
+      clearTimeout(this._reconnectInterval)
+      this._reconnectInterval = null
+    }
     if (!this._ws || this._ws.readyState !== WebSocket.OPEN) {
       if (this._ws) {
         this._ws.onmessage = null
@@ -35,7 +40,7 @@ export class APIWebSocket implements APIWebSocket {
         this._ws.close()
         this._ws = null
       }
-      this._ws = new WebSocket(`${this.url}?token=${this._token}`)
+      this._ws = new WebSocket(`${this.url}?token=${encodeURIComponent(this._token)}`)
       this._ws.onerror = this.connect.bind(this)
       this._ws.onmessage = ({ data: rawData }) => {
         if (this.onmessage) {
@@ -61,12 +66,28 @@ export class APIWebSocket implements APIWebSocket {
         if (this.onclose) {
           this.onclose()
         }
+        // onerror alone misses clean closes (code 1000). Reconnect with a
+        // backoff, unless we were disposed or have no token (e.g. after logout /
+        // auth failure) — which would otherwise tight-loop reconnecting.
+        if (this._shouldConnect && this._token) {
+          this._reconnectInterval = setTimeout(() => this.connect(), 5000)
+        }
       }
     }
   }
 
   close() {
     this._ws?.close()
+  }
+
+  disconnect() {
+    // Permanent teardown: stop reconnecting and close.
+    this._shouldConnect = false
+    if (this._reconnectInterval) {
+      clearTimeout(this._reconnectInterval)
+      this._reconnectInterval = null
+    }
+    this.close()
   }
 
   send(data: any) {

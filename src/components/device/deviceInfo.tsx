@@ -42,7 +42,7 @@ const DeviceInfo = ({ id }) => {
       <DeviceInfoLabel>State:</DeviceInfoLabel>
       <div>{['Off', '...', 'On'][device.status.is_online]}</div>
       <DeviceInfoLabel>Device Role:</DeviceInfoLabel>
-      <div>{device.data.device_role?.display}</div>
+      <div>{device.data.role?.display}</div>
       <DeviceInfoLabel>Device Type:</DeviceInfoLabel>
       <div>
         {device.data.device_type?.manufacturer.name}{' '}

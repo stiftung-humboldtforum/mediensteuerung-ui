@@ -16,8 +16,8 @@ import {
   TextField,
   Tooltip,
   Typography,
+  Button,
 } from '@mui/material'
-import update from 'immutability-helper'
 import Startup from '../../containers/startup'
 import { useStores } from '../../models'
 import { SettingsSnapshotOut } from '../../models/SettingsStore'
@@ -27,8 +27,6 @@ import DeviceOrder from './deviceOrder'
 import useAxios from 'axios-hooks'
 import Config from '../../config'
 import { DialogBody } from '@blueprintjs/core'
-import { LoadingButton } from '@mui/lab'
-import DeviceOptions from './deviceOptions'
 
 const Settings = ({ me, open, onClose }) => {
   const [{ data: config = [], loading, error }, refetch] = useAxios(
@@ -164,19 +162,6 @@ const Settings = ({ me, open, onClose }) => {
                       })
                     }}
                   />
-                  <DeviceOptions
-                    config={state.backend.device_options}
-                    onChange={config => {
-                      console.log(config)
-                      setState({
-                        ...state,
-                        backend: update(state.backend, {
-                          device_options: { value: { $set: config.value } },
-                        }),
-                        isDirty: true,
-                      })
-                    }}
-                  />
                   {/*<DeviceOrder />*/}
                 </List>
               </AccordionDetails>
@@ -185,17 +170,17 @@ const Settings = ({ me, open, onClose }) => {
         </List>
       </DialogBody>
       <DialogActions>
-        <LoadingButton
+        <Button
           color="success"
           disabled={!state.isDirty}
           onClick={() => console.log({ data: Object.values(state.backend) })}
           size="large"
         >
           Apply
-        </LoadingButton>
-        <LoadingButton size="large" onClick={onClose}>
+        </Button>
+        <Button size="large" onClick={onClose}>
           Cancel
-        </LoadingButton>
+        </Button>
       </DialogActions>
     </Dialog>
   )

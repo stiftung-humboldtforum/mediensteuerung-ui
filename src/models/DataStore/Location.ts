@@ -26,7 +26,7 @@ export const LocationDataModel = types.model('LocationData').props({
 
 export const LocationModel = types
   .model({
-    id: types.identifierNumber,
+    id: types.identifier,
     data: LocationDataModel,
     status: types.optional(
       types.model({
@@ -45,7 +45,7 @@ export const LocationModel = types
         ws.send({
           target: 'location',
           command: 'fetch',
-          data: { id: store.id },
+          data: { id: Number(store.id) },
         })
       }
     },
