@@ -13,12 +13,12 @@ import { useDragDropManager } from 'react-dnd'
 
 import useErrors from '../hooks/useErrors'
 import { load, save } from '../utils/storage'
+import { removeLeaf } from '../utils/mosaic'
 
 import { useStores } from '../models'
 import DragLayer from '../components/dragLayer'
 import AppBar from '../components/appBar'
 import Rooms from '../components/rooms'
-import FloorPlan from '../components/floorplan'
 import Table from '../components/table'
 import Device from '../components/device'
 import Calendar from '../components/calendar'
@@ -58,7 +58,6 @@ const Main = () => {
     }
     return {
       rooms: path => <Rooms path={path} />,
-      floorplan: path => <FloorPlan path={path} />,
       devices: path => (
         <Table variant="devices" path={path} node={node} modelKey="devices" />
       ),
@@ -133,7 +132,9 @@ const Main = () => {
             // Persisted layouts may be in the react-mosaic v6 binary-tree shape;
             // v7 utilities expect the n-ary {type:'split',...} form. Normalize on
             // load so addToLargest/getLeaves don't corrupt a legacy layout.
-            setNode(convertLegacyToNary(storedNode))
+            // The floor plan view is no longer part of the app; drop its tile
+            // from layouts saved while it was.
+            setNode(removeLeaf(convertLegacyToNary(storedNode), 'floorplan'))
           }
           setLoading(false)
         })

@@ -45,10 +45,6 @@ const AppBar = ({ node, setNode }) => {
         key: 'rooms',
       },
       {
-        label: 'Floor Plan',
-        key: 'floorplan',
-      },
-      {
         label: 'Calendar',
         key: 'calendar',
       },
