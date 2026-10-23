@@ -1,5 +1,6 @@
 import React, { memo, useMemo, useState, useCallback, useEffect } from 'react'
 import useAxios from 'axios-hooks'
+import { enqueueSnackbar } from 'notistack'
 
 import {
   Box,
@@ -28,7 +29,7 @@ import Config from '../config'
 import PasswordInput from './passwordInput'
 
 interface UserProps {
-  _id: string
+  id: string
   email: string
   is_superuser: boolean
 }
@@ -44,7 +45,7 @@ const PasswordModal = ({
 }) => {
   const [{ data, loading, error }, patch] = useAxios(
     {
-      url: `https://${Config.API_HOST}/users/${user._id}`,
+      url: `https://${Config.API_HOST}/users/${user.id}`,
       method: 'patch',
     },
     { manual: true },
@@ -57,7 +58,11 @@ const PasswordModal = ({
   }, [password, password2])
 
   const save = useCallback(() => {
-    patch({ data: { ...user, password } })
+    patch({ data: { ...user, password } }).catch(() =>
+      enqueueSnackbar(`Could not set password for ${user.email}`, {
+        variant: 'error',
+      }),
+    )
   }, [user, password, patch])
 
   return (
@@ -161,14 +166,14 @@ interface UserRowProps {
 const UserRow = memo<UserRowProps>(({ user, refetch }) => {
   const [, patch] = useAxios(
     {
-      url: `https://${Config.API_HOST}/users/${user._id}`,
+      url: `https://${Config.API_HOST}/users/${user.id}`,
       method: 'patch',
     },
     { manual: true },
   )
   const [, _delete] = useAxios(
     {
-      url: `https://${Config.API_HOST}/users/${user._id}`,
+      url: `https://${Config.API_HOST}/users/${user.id}`,
       method: 'delete',
     },
     { manual: true },
@@ -179,12 +184,15 @@ const UserRow = memo<UserRowProps>(({ user, refetch }) => {
 
   useEffect(() => {
     if (needsCommit) {
-      patch({ data: userState }).then(() => {
-        setNeedsCommit(false)
-        refetch()
-      })
+      patch({ data: userState })
+        .then(() => refetch())
+        .catch(() => {
+          setUserState(user)
+          enqueueSnackbar(`Could not save ${user.email}`, { variant: 'error' })
+        })
+        .finally(() => setNeedsCommit(false))
     }
-  }, [refetch, patch, userState, needsCommit])
+  }, [refetch, patch, user, userState, needsCommit])
 
   return (
     <TableRow key={user.email}>
@@ -210,7 +218,14 @@ const UserRow = memo<UserRowProps>(({ user, refetch }) => {
         <IconButton
           disabled={userState.is_superuser}
           onClick={() =>
-            !userState.is_superuser && _delete().then(() => refetch())
+            !userState.is_superuser &&
+            _delete()
+              .then(() => refetch())
+              .catch(() =>
+                enqueueSnackbar(`Could not delete ${user.email}`, {
+                  variant: 'error',
+                }),
+              )
           }
         >
           <Delete />
