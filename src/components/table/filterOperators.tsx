@@ -41,11 +41,12 @@ const TagInputValue = observer<GridFilterInputValueProps>(props => {
       isOptionEqualToValue={({ id }, { id: id2 }) => id === id2}
       onChange={(_, value) => handleFilterChange(value)}
       value={item.value || []}
-      renderTags={(tagValue, getTagProps) =>
+      // MUI 9 removed renderTags; renderValue is its replacement.
+      renderValue={(tagValue, getItemProps) =>
         tagValue.map((option, index) => {
-          // getTagProps returns a `key`; React 19 warns if it is spread, so
+          // getItemProps returns a `key`; React 19 warns if it is spread, so
           // pull it out and pass it explicitly.
-          const { key, ...tagProps } = getTagProps({ index })
+          const { key, ...tagProps } = getItemProps({ index })
           return (
             <Chip key={key} label={option.label} {...tagProps} size="small" />
           )

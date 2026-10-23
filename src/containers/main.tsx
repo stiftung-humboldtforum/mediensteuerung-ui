@@ -199,7 +199,8 @@ const Main = () => {
         value={node}
         onRelease={node => setNode(node)}
         blueprintNamespace="bp6"
-        className="mosaic-blueprint-theme bp6-dark"
+        // react-mosaic's stylesheet scopes its dark theme to .bp5-dark
+        className="mosaic-blueprint-theme bp6-dark bp5-dark"
         dragAndDropManager={dragDropManager}
       />
       <DragLayer />
