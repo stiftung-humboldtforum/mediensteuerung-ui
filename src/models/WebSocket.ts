@@ -17,6 +17,7 @@ export class APIWebSocket implements APIWebSocket {
     this.url = url
     this._outQueue = new Set()
     this._isConnected = false
+    this._shouldConnect = true
     this.connect()
   }
 
@@ -26,7 +27,8 @@ export class APIWebSocket implements APIWebSocket {
   }
 
   connect() {
-    this._shouldConnect = true
+    // A late error/close of a disposed instance must not revive it.
+    if (!this._shouldConnect) return
     if (this._reconnectInterval) {
       clearTimeout(this._reconnectInterval)
       this._reconnectInterval = null
