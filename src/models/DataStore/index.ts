@@ -1,4 +1,4 @@
-import { Instance, SnapshotOut, SnapshotIn, types } from 'mobx-state-tree'
+import { Instance, SnapshotOut, SnapshotIn, types, applySnapshot } from 'mobx-state-tree'
 import { api } from '../../services/api/'
 import { withSetPropAction } from '../helpers/withSetPropAction'
 import { DeviceModel } from './Device'
@@ -9,6 +9,7 @@ import { KNXEventsModel } from './KNX'
 
 export type { Device, DeviceSnapshotIn } from './Device'
 
+// geändert DA: async fetchData()
 export const DataStoreModel = types
   .model('DataStore')
   .props({
@@ -31,18 +32,30 @@ export const DataStoreModel = types
   .actions(store => ({
     async fetchData() {
       store.setProp('isLoading', true)
-      const response = await api.getData()
-      const data = response as DataStoreSnapshotIn
-      store.setProp('locations', data.locations)
-      store.setProp('tags', data.tags)
-      store.setProp('devices', data.devices)
-      store.setProp('isLoading', false)
-      values(store.devices).map(({ fetch }: any) => fetch())
-      values(store.tags).map(({ fetch }: any) => fetch())
-      values(store.locations).map(({ fetch }: any) => fetch())
+      try {
+        const response = await api.getData()
+        const data = response as DataStoreSnapshotIn
+
+        // Setze Maps einzeln - sicherer bei Netzwerkproblemen
+        applySnapshot(store.devices, data.devices)
+        applySnapshot(store.tags, data.tags)
+        applySnapshot(store.locations, data.locations)
+
+        store.setProp('isLoading', false)
+
+        // Fetch device statuses
+        values(store.devices).map(({ fetch }: any) => fetch())
+        values(store.tags).map(({ fetch }: any) => fetch())
+        values(store.locations).map(({ fetch }: any) => fetch())
+      } catch (error) {
+        console.error('fetchData() failed:', error)
+        store.setProp('isLoading', false)
+      }
     },
     commitDeviceEvent(event) {
-      const device = store.devices.get(event.target)
+      // Map keys are string ids (types.identifier); the backend event.target is
+      // the numeric id -> coerce so the status actually lands (else: spinner).
+      const device = store.devices.get(String(event.target))
       if (device) {
         if (event.type === 'capabilities') {
           device.status.is_attached = true
@@ -51,14 +64,14 @@ export const DataStoreModel = types
       }
     },
     commitTagEvent(event) {
-      const tag = store.tags.get(event.target)
+      const tag = store.tags.get(String(event.target))
       if (tag) {
         tag.status.is_attached = true
         tag.status[event.type] = event.value
       }
     },
     commitLocationEvent(event) {
-      const location = store.locations.get(event.target)
+      const location = store.locations.get(String(event.target))
       if (location) {
         location.status.is_attached = true
         location.status[event.type] = event.value
