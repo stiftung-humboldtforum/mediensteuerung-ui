@@ -561,14 +561,14 @@
   resolved "https://registry.yarnpkg.com/@mui/core-downloads-tracker/-/core-downloads-tracker-9.5.0.tgz#42d07b201a43020a579f448549462d60fe03db82"
   integrity sha512-PErEpl3Lp+1ZqWYKI7GQU8XSiciAFmLbUAZ7IoaUL598HLy1UAFuEUMEJu8yAS1v8vkXYzWprMVZzky4UwXoOA==
 
-"@mui/icons-material@^9.2.0":
+"@mui/icons-material@9.5.0":
   version "9.5.0"
   resolved "https://registry.yarnpkg.com/@mui/icons-material/-/icons-material-9.5.0.tgz#06bde090e09dec3219e0b1eef31a0e488bd056f0"
   integrity sha512-dahtVaqnRUIBgaZ4WC9EdP+LgJ5d2rslASYIX+nDFG6+ssUiM11jQ+Gd1wH8vhUGoNA9ES40MYics5BI8zJFXQ==
   dependencies:
     "@babel/runtime" "^7.29.7 || ^8.0.5"
 
-"@mui/material@^9.2.0":
+"@mui/material@9.5.0":
   version "9.5.0"
   resolved "https://registry.yarnpkg.com/@mui/material/-/material-9.5.0.tgz#914e2ed4013bd33801430d0781bf203263cc3ea7"
   integrity sha512-QgqvdVjZoKxP8E8SBxYY6LrdV+kw00moXweZQWBbMMdifPKZAGfUaaXhGKIca6fjKnCL6HJIe/AWWCpqNvyHVw==
@@ -640,7 +640,7 @@
     prop-types "^15.8.1"
     react-is "^19.3.0"
 
-"@mui/x-data-grid@^9.5.0":
+"@mui/x-data-grid@9.16.0":
   version "9.16.0"
   resolved "https://registry.yarnpkg.com/@mui/x-data-grid/-/x-data-grid-9.16.0.tgz#a64469d41ce72950d05694eea1a8796293f75430"
   integrity sha512-xgTG4DZ8Y3LV0dx3zw4NmyJfi4qk6KqgaQNEBDwku9bpAsXsrob7Tcgg+LECPc3ldbtTfCDon/v1yyt9bfDNyQ==
@@ -654,7 +654,7 @@
     prop-types "^15.8.1"
     use-sync-external-store "^1.7.0"
 
-"@mui/x-date-pickers@^9.5.0":
+"@mui/x-date-pickers@9.16.0":
   version "9.16.0"
   resolved "https://registry.yarnpkg.com/@mui/x-date-pickers/-/x-date-pickers-9.16.0.tgz#be1b898c6de535b3b92c8d63cd42cf5300951cb9"
   integrity sha512-1V6C2yx9Gl61WJ03pHHgOFPRTYBH/hRqzgdhEDY3jYR/5LJ9kr+2WvtioEWrKn+B/7FasjwuYi2wZx9O8TZ/nw==
@@ -677,7 +677,7 @@
     "@mui/utils" "^9.5.0"
     reselect "^5.3.0"
 
-"@mui/x-tree-view@^9.4.0":
+"@mui/x-tree-view@9.16.0":
   version "9.16.0"
   resolved "https://registry.yarnpkg.com/@mui/x-tree-view/-/x-tree-view-9.16.0.tgz#11c74a626e50908180f3257f3ac7c14b9e68eb1d"
   integrity sha512-/dZAW6LDEd8mSEbXurd5NDAg3+gtljxmJzFreEZO5ZKaLu6uZOO7knK3zmcQuPvhAuQUpDeyHQ/U6adQBdXAbA==
@@ -3815,7 +3815,7 @@ react-is@^19.3.0:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-19.3.1.tgz#81f7f7e431fc9b5bd9781b0a9f19997f08dee51b"
   integrity sha512-RRieF6IyxQBkcK6pP8xOHprLTPW6QjRkbGdImtqNme+/hYVwCZkLQLdlZGOhUqXwkS9IEynaGvPJtv6XB/cz0Q==
 
-react-mosaic-component@^7.0.0-beta0:
+react-mosaic-component@7.2.1:
   version "7.2.1"
   resolved "https://registry.yarnpkg.com/react-mosaic-component/-/react-mosaic-component-7.2.1.tgz#5d828f550f8d890a7ae2329171807807b722fa6e"
   integrity sha512-dZ1FE+4GB2tl4ZMswkTnjXGyZi6a5aJ8yfeUabuBNDac7knUcwpasp/8+kWJfCwrpO7yp2nnUnxccSJLNmfHUg==
