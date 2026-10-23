@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import axios from 'axios'
 import useAxios from 'axios-hooks'
 
@@ -6,6 +6,7 @@ import Config from '../config'
 import { useStores } from '../models'
 import { AuthenticationType } from '../context/types'
 import { save, load, remove } from '../utils/storage'
+import { refreshDelay } from '../utils/token'
 
 const axiosIntercept = ({
   token,
@@ -97,28 +98,26 @@ const useAuthentication = (): [
     [postLogin, authenticationStore],
   )
 
-  const refreshInterval = useRef<string | number | undefined>(undefined)
-
   useEffect(() => {
-    if (isAuthenticated) {
-      refreshInterval.current = window.setInterval(async () => {
-        try {
-          const { data } = await axios.post(
-            `https://${Config.API_HOST}/auth/jwt/refresh`,
-          )
-          await save('auth', data)
-          authenticationStore.setAuthToken(data.access_token)
-          setToken(data.access_token)
-        } catch (exception) {
-          // A failed refresh must not leave a stale token + unhandled rejection
-          // while the interval keeps firing — log out cleanly.
-          console.error(exception)
-          logout()
-        }
-      }, 3600000)
-    }
-    return () => window.clearInterval(refreshInterval.current)
-  }, [authenticationStore, isAuthenticated, logout])
+    if (!token) return
+    // Re-armed with every new token, timed by its expiry.
+    const refreshTimeout = window.setTimeout(async () => {
+      try {
+        const { data } = await axios.post(
+          `https://${Config.API_HOST}/auth/jwt/refresh`,
+        )
+        await save('auth', data)
+        authenticationStore.setAuthToken(data.access_token)
+        setToken(data.access_token)
+      } catch (exception) {
+        // A failed refresh must not leave a stale token + unhandled rejection
+        // — log out cleanly.
+        console.error(exception)
+        logout()
+      }
+    }, refreshDelay(token))
+    return () => window.clearTimeout(refreshTimeout)
+  }, [authenticationStore, token, logout])
 
   useEffect(() => {
     load('auth').then(auth => {
